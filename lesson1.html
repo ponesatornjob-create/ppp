@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บทเรียน: จริยธรรมในการใช้เทคโนโลยี</title>
+<style>
+body {
+  font-family: 'Comic Sans MS', Arial, sans-serif;
+  background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+}
+h1 { color: #ff4500; font-size: 2.2em; margin-bottom: 25px; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+h2 { color: #4682b4; font-size: 1.5em; margin: 20px 0 15px; text-align: left; }
+.container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 25px 30px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: left; animation: fadeIn 0.8s ease-in-out; }
+.lesson-card { background: #fef9ff; border: 2px solid #ff69b4; border-radius: 15px; padding: 18px 22px; margin: 20px 0; box-shadow: 2px 5px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+.lesson-card:hover { transform: scale(1.02); }
+ul { list-style: none; padding: 0; margin: 10px 0; }
+li { margin: 12px 0; font-size: 1.1em; line-height: 1.6; display: flex; flex-direction: column; align-items: flex-start; cursor: pointer; }
+p { cursor: pointer; }
+img.highlight { max-width: 100%; height: auto; margin-top: 10px; border-radius: 12px; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); transition: transform 0.2s; }
+img.highlight:hover { transform: scale(1.05); }
+.button { display: inline-block; padding: 12px 25px; margin: 20px 10px 0; background-color: #32cd32; color: #fff; text-decoration: none; border-radius: 15px; font-size: 1.1em; box-shadow: 0 4px 0 #228b22; transition: transform 0.2s, background-color 0.3s; }
+.button:hover { background-color: #45a049; transform: scale(1.05); }
+.back-button { background-color: #4682b4; box-shadow: 0 4px 0 #2f4f4f; }
+.back-button:hover { background-color: #5a9bd5; }
+.fullscreen-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+.fullscreen-overlay img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 15px; }
+.fullscreen-overlay .close-button { position: absolute; top: 20px; right: 20px; color: white; font-size: 2em; cursor: pointer; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>บทเรียน: จริยธรรมในการใช้เทคโนโลยี</h1>
+
+  <div class="lesson-card">
+    <h2>1. มารยาทและจริยธรรมในการใช้เทคโนโลยีสารสนเทศ</h2>
+    <p onclick="speakText('มารยาท คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ')"><b>มารยาท</b> คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ</p>
+    <ul>
+      <li><img src="5.png" alt="พูดจาสุภาพ" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+    </ul>
+    <p onclick="speakText('จริยธรรม คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง')"><b>จริยธรรม</b> คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง</p>
+    <ul>
+      <li><img src="4.png" alt="ทำสิ่งที่ถูกต้อง" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+    </ul>
+    <p onclick="speakText('การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข')">การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข</p>
+  </div>
+
+  <div class="lesson-card">
+    <h2>2. บัญญัติ 10 ประการเกี่ยวกับมารยาทในการใช้เทคโนโลยีสารสนเทศ</h2>
+    <ul>
+      <li onclick="speakText('ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น')">1. ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น<br><img src="6.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่รบกวนการทำงานของผู้อื่น')">2. ไม่รบกวนการทำงานของผู้อื่น<br><img src="7.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น')">3. ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น<br><img src="8.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล')">4. ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล<br><img src="9.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่สร้างหลักฐานเท็จ')">5. ไม่สร้างหลักฐานเท็จ<br><img src="10.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์')">6. ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์<br><img src="11.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น')">7. ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น<br><img src="12.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ไม่นำผลงานของผู้อื่นเป็นของตน')">8. ไม่นำผลงานของผู้อื่นเป็นของตน<br><img src="13.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน')">9. คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน<br><img src="14.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+      <li onclick="speakText('ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท')">10. ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท<br><img src="https://jpjetiya.wordpress.com/wp-content/uploads/2015/08/images9.jpg" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
+    </ul>
+  </div>
+
+  <a href="lessons.html" class="button back-button">⬅ กลับหน้าเลือกบทเรียน</a>
+</div>
+
+<div id="fullscreenOverlay" class="fullscreen-overlay">
+  <span class="close-button" onclick="closeFullscreen()">✕</span>
+  <img id="fullscreenImage" src="" alt="">
+</div>
+
+<script>
+function speakText(text) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'th-TH';
+    utterance.rate = 0.61;
+    utterance.pitch = 0.61;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  } else {
+    alert('เบราว์เซอร์ของคุณไม่รองรับ TTS');
+  }
+}
+
+function showFullscreen(src, alt) {
+  const overlay = document.getElementById('fullscreenOverlay');
+  const img = document.getElementById('fullscreenImage');
+  img.src = src;
+  img.alt = alt;
+  overlay.style.display = 'flex';
+}
+
+function closeFullscreen() {
+  document.getElementById('fullscreenOverlay').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
