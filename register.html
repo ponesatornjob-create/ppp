@@ -144,7 +144,7 @@ async function register() {
     await createUserWithEmailAndPassword(auth, tempEmail, password);
     message.style.color = "green";
     message.textContent = "✅ สมัครสมาชิกสำเร็จ! กำลังไปหน้า Home...";
-    setTimeout(() => { window.location.href = "Home.html"; }, 1500);
+    setTimeout(() => { window.location.href = "home.html"; }, 1500);
   } catch (error) {
     message.style.color = "red";
     message.textContent = errorMessages[error.code] || "เกิดข้อผิดพลาด: " + error.message;
@@ -156,3 +156,4 @@ window.register = register;
 </script>
 </body>
 </html>
+
