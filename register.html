@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สมัครสมาชิก</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', Arial, sans-serif;
+    background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    background: white;
+    border: 5px solid #ff69b4;
+    border-radius: 25px;
+    padding: 30px;
+    max-width: 400px;
+    margin: 60px auto;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    animation: fadeIn 1s ease-in-out;
+  }
+  h1 {
+    color: #ff4081;
+    font-size: 2em;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+    text-shadow: 2px 2px #ffd700;
+  }
+  input[type="text"], input[type="password"] {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 15px;
+    border: 2px solid #ff69b4;
+    font-size: 1em;
+  }
+  .button {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-top: 15px;
+    background-color: #ff69b4;
+    color: white;
+    border-radius: 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: 0 5px #c2185b;
+    transition: transform 0.2s, background-color 0.3s;
+    text-decoration: none;
+  }
+  .button:hover {
+    background-color: #f06292;
+    transform: scale(1.05);
+  }
+  .button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px #9c165c;
+  }
+  #message {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 1.2em;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-15px); }
+    60% { transform: translateY(-7px); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.5; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📝 สมัครสมาชิก</h1>
+
+  <input type="text" id="userID" placeholder="ID ของคุณ (ขั้นต่ำ 4 ตัว)" required>
+  <input type="password" id="password" placeholder="รหัสผ่าน" required>
+  <input type="password" id="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
+  <br>
+  <button class="button" onclick="register()">สมัครสมาชิก</button>
+  <p id="message"></p>
+  <p>มีบัญชีแล้ว? <a href="login.html">เข้าสู่ระบบ</a></p>
+
+  <!-- ปุ่มกลับหน้าหลัก แบบน่ารัก ไม่มีเส้นตรง -->
+  <a href="index.html" class="button">🏠 กลับหน้าหลัก</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+  authDomain: "ppp5-b59d6.firebaseapp.com",
+  projectId: "ppp5-b59d6",
+  storageBucket: "ppp5-b59d6.appspot.com",
+  messagingSenderId: "562619004801",
+  appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+  measurementId: "G-H1DQRS4WVE"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const errorMessages = {
+  "auth/email-already-in-use": "ID นี้ถูกใช้ไปแล้ว",
+  "auth/invalid-email": "ID ไม่ถูกต้อง",
+  "auth/weak-password": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+  "auth/missing-password": "กรุณากรอกรหัสผ่าน"
+};
+
+// สมัครสมาชิก
+async function register() {
+  const userID = document.getElementById("userID").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const message = document.getElementById("message");
+
+  if (userID.length < 4) {
+    message.style.color = "red";
+    message.textContent = "❌ ID ต้องมีอย่างน้อย 4 ตัวอักษร";
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    message.style.color = "red";
+    message.textContent = "❌ รหัสผ่านไม่ตรงกัน";
+    return;
+  }
+
+  try {
+    const tempEmail = userID + "@example.com";
+    await createUserWithEmailAndPassword(auth, tempEmail, password);
+    message.style.color = "green";
+    message.textContent = "✅ สมัครสมาชิกสำเร็จ! กำลังไปหน้า Home...";
+    setTimeout(() => { window.location.href = "Home.html"; }, 1500);
+  } catch (error) {
+    message.style.color = "red";
+    message.textContent = errorMessages[error.code] || "เกิดข้อผิดพลาด: " + error.message;
+    console.error(error);
+  }
+}
+
+window.register = register;
+</script>
+</body>
+</html>

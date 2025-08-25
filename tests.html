@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เลือกแบบทดสอบจริยธรรม</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(to bottom right, #fbc2eb, #a6c1ee);
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 30px;
+            border: 5px solid #ffa500;
+            border-radius: 25px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+        h1 {
+            color: #ff9800;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            animation: bounce 2s infinite;
+        }
+        p {
+            font-size: 1.2em;
+            color: #333;
+            margin: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 1.2em;
+            transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
+        }
+        .button:hover {
+            transform: scale(1.1);
+        }
+        .button:active {
+            transform: scale(0.95);
+        }
+        .pretest-button {
+            background-color: #ffa500;
+            box-shadow: 0 5px 0 #cc8400;
+        }
+        .pretest-button:hover {
+            background-color: #cc8400;
+        }
+        .posttest-button {
+            background-color: #ff69b4;
+            box-shadow: 0 5px 0 #c2185b;
+        }
+        .posttest-button:hover {
+            background-color: #c2185b;
+        }
+        .satisfaction-button {
+            background-color: #32cd32;
+            box-shadow: 0 5px 0 #228b22;
+        }
+        .satisfaction-button:hover {
+            background-color: #228b22;
+        }
+        .back-button {
+            background-color: #4682b4;
+            box-shadow: 0 5px 0 #2f4f4f;
+        }
+        .back-button:hover {
+            background-color: #2f4f4f;
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-20px); }
+          60% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 แบบทดสอบเทคโนโลยีที่ปลอดภัยและจริยธรรมในการใช้เทคโนโลยี</h1>
+        <p>เลือกแบบทดสอบและแบบประเมินความพึงพอใจ:</p>
+
+        <a href="https://forms.gle/kcsqGhHHoPeWKfyd8" target="_blank" class="button pretest-button">แบบทดสอบก่อนเรียน</a>
+        <a href="https://forms.gle/Ag14fkubgPdmt8CNA" target="_blank" class="button posttest-button">แบบทดสอบหลังเรียน</a>
+        <a href="https://forms.gle/yourSatisfactionFormID" target="_blank" class="button satisfaction-button">แบบประเมินความพึงพอใจ</a>
+        <br>
+        <a href="home.html" class="button back-button">กลับหน้าหลัก</a>
+    </div>
+</body>
+</html>

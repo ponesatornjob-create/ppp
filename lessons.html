@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เลือกบทเรียน</title>
+<style>
+    body {
+        font-family: 'Comic Sans MS', Arial, sans-serif;
+        background-color: #f0f8ff;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        color: #ff4500;
+        font-size: 2.8em;
+        text-shadow: 2px 2px #ffd700;
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.25);
+        border: 5px solid #ffb6c1;
+    }
+    p {
+        font-size: 1.3em;
+        color: #333;
+    }
+    .button {
+        display: inline-block;
+        padding: 15px 35px;
+        margin: 15px;
+        background-color: #32cd32;
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-size: 1.3em;
+        transition: transform 0.2s, background-color 0.3s;
+        box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+    }
+    .button:hover {
+        background-color: #228b22;
+        transform: scale(1.1);
+    }
+    .button:active {
+        transform: scale(0.95);
+    }
+    .video-button {
+        background-color: #1e90ff;
+    }
+    .video-button:hover {
+        background-color: #104e8b;
+    }
+    .back-button {
+        background-color: #4682b4;
+    }
+    .back-button:hover {
+        background-color: #2f4f4f;
+    }
+    .button-container {
+        margin-top: 25px;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>📘 เลือกบทเรียน</h1>
+        <p>เลือกประเภทบทเรียนที่ต้องการเรียนรู้:</p>
+
+        <!-- ปุ่มบทเรียนแบบอ่าน -->
+        <a href="lesson1.html" class="button">✨ บทเรียนจริยธรรมในการใช้เทคโนโลยี</a>
+        <a href="lesson2.html" class="button">🔒 เทคโนโลยีปลอดภัย</a>
+
+        <br><br>
+
+        <!-- ปุ่มบทเรียนแบบวิดีโอ -->
+        <a href="video1.html" class="button video-button">🎬 วิดีโอจริยธรรมในการใช้เทคโนโลยี</a>
+        <a href="video2.html" class="button video-button">🎥 วิดีโอเทคโนโลยีปลอดภัย</a>
+
+        <div class="button-container">
+            <a href="home.html" class="button back-button">⬅️ กลับหน้าหลัก</a>
+        </div>
+    </div>
+</body>
+</html>

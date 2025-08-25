@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>โปรไฟล์ของคุณ</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', Arial, sans-serif;
+    background: linear-gradient(to bottom right, #ffe0f0, #a0e9ff);
+    text-align: center;
+    padding: 30px;
+  }
+  .profile-container {
+    background: white;
+    border: 5px solid #ff69b4;
+    border-radius: 25px;
+    padding: 30px;
+    max-width: 500px;
+    margin: 50px auto;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+  }
+  #profilePic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid #ff69b4;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  #username {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  #quote {
+    font-size: 1.2em;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 30px;
+  }
+  .button {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 1.2em;
+    box-shadow: 0 5px 0 #388e3c;
+    transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
+  }
+  .button:hover { background-color: #45a049; transform: scale(1.05); }
+</style>
+</head>
+<body>
+<div class="profile-container">
+  <img id="profilePic" src="" alt="โปรไฟล์">
+  <div id="username">ผู้ใช้</div>
+  <div id="quote">คำคมของคุณจะปรากฏที่นี่</div>
+  <a href="home.html" class="button">🏠 กลับหน้าหลัก</a>
+</div>
+
+<script>
+// ดึงข้อมูลจาก localStorage
+const profilePic = localStorage.getItem("profilePic") || "avatars/1.jpg";
+const username = localStorage.getItem("username") || "ผู้ใช้";
+
+// คำคมภาษาไทยสำหรับเด็ก ป.5
+const quotes = [
+  "📚 การเรียนรู้คือความสนุก!",
+  "🌟 จงใจดีและช่วยเหลือเพื่อนเสมอ",
+  "💡 ความอยากรู้ทำให้เราเก่งขึ้น",
+  "🎨 ความคิดสร้างสรรค์ทำให้ชีวิตสดใส",
+  "⚽ เล่นกีฬาอย่างยุติธรรมและสนุกสนาน",
+  "🎵 ดนตรีทำให้หัวใจมีความสุข",
+  "🌳 ออกสำรวจโลกด้วยความสนุก",
+  "🎮 เกมสนุก แต่การเรียนก็สำคัญ",
+  "📖 การอ่านเปิดโลกใหม่ให้เรา"
+];
+
+// เลือกคำคมแบบสุ่ม
+const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+
+// แสดงผล
+document.getElementById("profilePic").src = profilePic;
+document.getElementById("username").textContent = username;
+document.getElementById("quote").textContent = randomQuote;
+</script>
+</body>
+</html>

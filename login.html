@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ</title>
+<style>
+  body {
+    font-family: 'Comic Sans MS', Arial, sans-serif;
+    background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .container {
+    background: white;
+    border: 5px solid #ff69b4;
+    border-radius: 25px;
+    padding: 30px;
+    max-width: 400px;
+    margin: 60px auto;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  h1 {
+    color: #ff4081;
+    font-size: 2em;
+    margin-bottom: 20px;
+    animation: bounce 2s infinite;
+    text-shadow: 2px 2px #ffd700;
+  }
+
+  input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 15px;
+    border: 2px solid #ff69b4;
+    font-size: 1em;
+  }
+
+  .button {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-top: 15px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: 0 5px #388e3c;
+    transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
+    text-decoration: none;
+    animation: floatButton 3s infinite;
+  }
+
+  .button:hover {
+    background-color: #45a049;
+    transform: scale(1.1);
+  }
+
+  .button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px #2e7d32;
+  }
+
+  #message {
+    margin-top: 15px;
+    font-weight: bold;
+    font-size: 1.2em;
+    animation: blink 1s infinite;
+  }
+
+  /* ปุ่มกลับหน้าหลัก */
+  .back-button {
+    background-color: #ff69b4;
+    box-shadow: 0 5px #c2185b;
+    margin-top: 10px;
+    animation: floatButton 3s infinite;
+  }
+  .back-button:hover {
+    background-color: #f06292;
+    transform: scale(1.1);
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-15px); }
+    60% { transform: translateY(-7px); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.5; }
+  }
+
+  @keyframes floatButton {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔑 เข้าสู่ระบบ</h1>
+  <input type="text" id="userID" placeholder="ID ของคุณ" required>
+  <input type="password" id="password" placeholder="รหัสผ่าน" required>
+  <br>
+  <button class="button" onclick="login()">เข้าสู่ระบบ</button>
+  <p id="message"></p>
+  <p>ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิก</a></p>
+  
+  <!-- ปุ่มกลับหน้า index -->
+  <a href="index.html" class="button back-button">🏠 กลับหน้าหลัก</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+  authDomain: "ppp5-b59d6.firebaseapp.com",
+  projectId: "ppp5-b59d6",
+  storageBucket: "ppp5-b59d6.firebasestorage.app",
+  messagingSenderId: "562619004801",
+  appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+  measurementId: "G-H1DQRS4WVE"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const errorMessages = {
+  "auth/invalid-email": "ID ไม่ถูกต้อง",
+  "auth/user-not-found": "ไม่พบบัญชีผู้ใช้นี้",
+  "auth/wrong-password": "รหัสผ่านไม่ถูกต้อง",
+  "auth/missing-password": "กรุณากรอกรหัสผ่าน"
+};
+
+async function login() {
+  const userID = document.getElementById("userID").value;
+  const password = document.getElementById("password").value;
+  const message = document.getElementById("message");
+
+  const tempEmail = userID + "@example.com";
+
+  try {
+    await signInWithEmailAndPassword(auth, tempEmail, password);
+    message.style.color = "green";
+    message.textContent = "🎉 เข้าสู่ระบบสำเร็จ! กำลังไปหน้า Home...";
+    setTimeout(() => { window.location.href = "home.html"; }, 1500);
+  } catch (error) {
+    message.style.color = "red";
+    message.textContent = errorMessages[error.code] || "เกิดข้อผิดพลาด: " + error.message;
+  }
+}
+
+window.login = login;
+</script>
+
+</body>
+</html>
