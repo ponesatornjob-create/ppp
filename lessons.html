@@ -6,63 +6,69 @@
 <title>เลือกบทเรียน</title>
 <style>
     body {
-        font-family: 'Comic Sans MS', Arial, sans-serif;
-        background-color: #f0f8ff;
+        font-family: 'Prompt', 'Arial', sans-serif;
+        background-color: #e6f3fa;
         text-align: center;
         margin: 0;
         padding: 20px;
     }
     h1 {
-        color: #ff4500;
-        font-size: 2.8em;
-        text-shadow: 2px 2px #ffd700;
+        color: #e65100;
+        font-size: 2.5em;
+        margin: 20px 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
     }
     .container {
-        max-width: 800px;
+        max-width: 700px;
         margin: 20px auto;
-        background-color: #fff;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.25);
-        border: 5px solid #ffb6c1;
+        background-color: #ffffff;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 3px solid #ffd1dc;
     }
     p {
-        font-size: 1.3em;
+        font-size: 1.2em;
         color: #333;
+        margin-bottom: 25px;
     }
     .button {
         display: inline-block;
-        padding: 15px 35px;
-        margin: 15px;
-        background-color: #32cd32;
+        padding: 12px 30px;
+        margin: 10px;
+        background-color: #28a745;
         color: white;
         text-decoration: none;
-        border-radius: 12px;
-        font-size: 1.3em;
+        border-radius: 10px;
+        font-size: 1.1em;
         transition: transform 0.2s, background-color 0.3s;
-        box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
     .button:hover {
-        background-color: #228b22;
-        transform: scale(1.1);
+        background-color: #218838;
+        transform: translateY(-2px);
     }
     .button:active {
-        transform: scale(0.95);
+        transform: translateY(1px);
     }
     .video-button {
-        background-color: #1e90ff;
+        background-color: #007bff;
     }
     .video-button:hover {
-        background-color: #104e8b;
+        background-color: #0056b3;
     }
     .back-button {
-        background-color: #4682b4;
+        background-color: #6c757d;
     }
     .back-button:hover {
-        background-color: #2f4f4f;
+        background-color: #5a6268;
     }
     .button-container {
-        margin-top: 25px;
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
     }
 </style>
 </head>
@@ -71,17 +77,14 @@
         <h1>📘 เลือกบทเรียน</h1>
         <p>เลือกประเภทบทเรียนที่ต้องการเรียนรู้:</p>
 
-        <!-- ปุ่มบทเรียนแบบอ่าน -->
-        <a href="lesson1.html" class="button">✨ บทเรียนจริยธรรมในการใช้เทคโนโลยี</a>
-        <a href="lesson2.html" class="button">🔒 เทคโนโลยีปลอดภัย</a>
-
-        <br><br>
-
-        <!-- ปุ่มบทเรียนแบบวิดีโอ -->
-        <a href="video1.html" class="button video-button">🎬 วิดีโอจริยธรรมในการใช้เทคโนโลยี</a>
-        <a href="video2.html" class="button video-button">🎥 วิดีโอเทคโนโลยีปลอดภัย</a>
-
         <div class="button-container">
+            <!-- ปุ่มบทเรียนแบบอ่าน -->
+            <a href="lesson1.html" class="button">✨ บทเรียนจริยธรรมในการใช้เทคโนโลยี</a>
+            <a href="lesson2.html" class="button">🔒 บทเรียนเทคโนโลยีปลอดภัย</a>
+            <!-- ปุ่มบทเรียนแบบวิดีโอ -->
+            <a href="video1.html" class="button video-button">🎬 วิดีโอจริยธรรมในการใช้เทคโนโลยี</a>
+            <a href="video2.html" class="button video-button">🎥 วิดีโอเทคโนโลยีปลอดภัย</a>
+            <!-- ปุ่มกลับหน้าหลัก -->
             <a href="home.html" class="button back-button">⬅️ กลับหน้าหลัก</a>
         </div>
     </div>
