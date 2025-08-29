@@ -71,7 +71,6 @@
 
   @keyframes fadeIn { from {opacity:0;transform:scale(0.9);} to {opacity:1;transform:scale(1);} }
 
-  /* Modal */
   #profileModal {
     display:none;
     position:fixed;
@@ -113,7 +112,6 @@
   <button id="logoutBtn" class="button logout-button">🚪 ออกจากระบบ</button>
 </div>
 
-<!-- Modal โปรไฟล์ -->
 <div id="profileModal">
   <div id="profileModalContent">
     <span id="closeModal">✖</span>
@@ -154,9 +152,9 @@ const quotes = [
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    const userID = user.displayName || user.email.split('@')[0];
-    document.getElementById("username").textContent = "👤 " + userID;
-    document.getElementById("welcomeText").textContent = "🎉 ยินดีต้อนรับคุณ " + userID + " 🎉";
+    const userName = user.displayName || user.email.split('@')[0];
+    document.getElementById("username").textContent = "👤 " + userName;
+    document.getElementById("welcomeText").textContent = "🎉 ยินดีต้อนรับ " + userName + " 🎉";
 
     const totalAvatars = 11; 
     const randomIndex = Math.floor(Math.random() * totalAvatars) + 1;
@@ -169,16 +167,14 @@ onAuthStateChanged(auth, (user) => {
     const showProfileModal = () => {
       const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
       document.getElementById("modalProfilePic").src = avatarSrc;
-      document.getElementById("modalUsername").textContent = userID;
+      document.getElementById("modalUsername").textContent = userName;
       document.getElementById("modalQuote").textContent = randomQuote;
       profileModal.style.display = "flex";
     };
 
-    // ชี้หรือคลิก → โชว์ modal
     profilePic.addEventListener("mouseenter", showProfileModal);
     profilePic.addEventListener("click", showProfileModal);
 
-    // ซ่อน modal เมื่อเอาเมาส์ออกจาก profilePic และ modal
     const hideProfileModal = () => {
       if (!profilePic.matches(':hover') && !profileModal.matches(':hover')) {
         profileModal.style.display = "none";
