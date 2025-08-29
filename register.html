@@ -84,6 +84,7 @@
 <div class="container">
   <h1>📝 สมัครสมาชิก</h1>
 
+  <input type="text" id="name" placeholder="ชื่อของคุณ" required>
   <input type="text" id="userID" placeholder="ID ของคุณ (ขั้นต่ำ 4 ตัว)" required>
   <input type="password" id="password" placeholder="รหัสผ่าน" required>
   <input type="password" id="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
@@ -92,13 +93,12 @@
   <p id="message"></p>
   <p>มีบัญชีแล้ว? <a href="login.html">เข้าสู่ระบบ</a></p>
 
-  <!-- ปุ่มกลับหน้าหลัก แบบน่ารัก ไม่มีเส้นตรง -->
   <a href="index.html" class="button">🏠 กลับหน้าหลัก</a>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
@@ -120,12 +120,18 @@ const errorMessages = {
   "auth/missing-password": "กรุณากรอกรหัสผ่าน"
 };
 
-// สมัครสมาชิก
 async function register() {
+  const name = document.getElementById("name").value.trim();
   const userID = document.getElementById("userID").value.trim();
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
   const message = document.getElementById("message");
+
+  if (name.length < 2) {
+    message.style.color = "red";
+    message.textContent = "❌ ชื่อต้องมีอย่างน้อย 2 ตัวอักษร";
+    return;
+  }
 
   if (userID.length < 4) {
     message.style.color = "red";
@@ -141,7 +147,8 @@ async function register() {
 
   try {
     const tempEmail = userID + "@example.com";
-    await createUserWithEmailAndPassword(auth, tempEmail, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, tempEmail, password);
+    await updateProfile(userCredential.user, { displayName: name });
     message.style.color = "green";
     message.textContent = "✅ สมัครสมาชิกสำเร็จ! กำลังไปหน้า Home...";
     setTimeout(() => { window.location.href = "home.html"; }, 1500);
@@ -156,4 +163,3 @@ window.register = register;
 </script>
 </body>
 </html>
-
