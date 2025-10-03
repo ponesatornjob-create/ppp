@@ -1,134 +1,308 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เลือกเกม</title>
-    <style>
-        body {
-            font-family: 'Comic Sans MS', Arial, sans-serif;
-            background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background-color: #fff;
-            padding: 30px;
-            border: 5px solid #ff69b4;
-            border-radius: 25px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            animation: fadeIn 1s ease-in-out;
-        }
-        h1 {
-            color: #ff4081;
-            font-size: 2.5em;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            animation: bounce 2s infinite;
-        }
-        p {
-            font-size: 1.2em;
-            color: #333;
-            margin: 20px;
-        }
-        .button {
-            display: inline-block;
-            padding: 15px 30px;
-            margin: 10px;
-            color: white;
-            text-decoration: none;
-            border-radius: 20px;
-            font-size: 1.2em;
-            box-shadow: 0 5px 0 #388e3c;
-            transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
-        }
-        .button:hover {
-            transform: scale(1.1);
-        }
-        .button:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 0 #2e7d32;
-        }
-        .ethics-button {
-            background-color: #32cd32;
-            box-shadow: 0 5px 0 #228b22;
-        }
-        .ethics-button:hover {
-            background-color: #228b22;
-        }
-        .tech-button {
-            background-color: #ff8c00;
-            box-shadow: 0 5px 0 #e67300;
-        }
-        .tech-button:hover {
-            background-color: #ff7000;
-        }
-        .back-button {
-            background-color: #4682b4;
-            box-shadow: 0 5px 0 #2f4f4f;
-        }
-        .back-button:hover {
-            background-color: #2f4f4f;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เกมสนุก Zep</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-        /* อนิเมชันเด้ง */
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-20px); }
-          60% { transform: translateY(-10px); }
-        }
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+      authDomain: "ppp5-b59d6.firebaseapp.com",
+      projectId: "ppp5-b59d6",
+      storageBucket: "ppp5-b59d6.appspot.com",
+      messagingSenderId: "562619004801",
+      appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+      measurementId: "G-H1DQRS4WVE"
+    };
 
-        /* อนิเมชันจางเข้า */
-        @keyframes fadeIn {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+          let prefix = data.gender === "ชาย" ? "เด็กชาย " : data.gender === "หญิง" ? "เด็กหญิง " : "";
+          const gradeMap = {
+            "ป.1": "ประถมศึกษาปีที่ 1",
+            "ป.2": "ประถมศึกษาปีที่ 2",
+            "ป.3": "ประถมศึกษาปีที่ 3",
+            "ป.4": "ประถมศึกษาปีที่ 4",
+            "ป.5": "ประถมศึกษาปีที่ 5",
+            "ป.6": "ประถมศึกษาปีที่ 6"
+          };
+          const fullGrade = gradeMap[data.grade] || data.grade;
+
+          document.getElementById("profilePhoto").src = data.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+          document.getElementById("profileName").textContent = prefix + (data.name || "");
+          document.getElementById("profileGrade").textContent = "ชั้น: " + fullGrade;
+          document.getElementById("profileGender").textContent = "เพศ: " + (data.gender || "");
+          document.getElementById("profileNumber").textContent = "เลขที่: " + (data.number || "ไม่ระบุ");
+          document.getElementById("profileSchool").textContent = "โรงเรียน: " + (data.school || "ไม่ระบุ");
+          document.getElementById("profileContainer").style.display = "flex";
+
+          let startTime = Date.now();
+          function updateTimes() {
+            const now = new Date();
+            document.getElementById("currentDate").textContent = "วันที่: " + now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("currentTime").textContent = "เวลา: " + now.toLocaleTimeString('th-TH');
+            const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
+            const hours = Math.floor(elapsedMinutes / 60);
+            const mins = elapsedMinutes % 60;
+            const sessionText = hours > 0 ? `${hours} ชั่วโมง ${mins} นาที` : `${mins} นาที`;
+            document.getElementById("sessionTime").textContent = "เวลาที่ใช้งาน: " + sessionText;
+          }
+          setInterval(updateTimes, 1000);
+          updateTimes();
+        } else {
+          alert("ไม่พบข้อมูลผู้ใช้งาน");
+          window.location.href = "login.html";
         }
-    </style>
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    window.logout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    };
+
+    window.toggleProfileDetails = function() {
+      const details = document.getElementById("profileDetails");
+      details.style.display = details.style.display === "block" ? "none" : "block";
+    };
+
+    window.openGameModal = function(url) {
+      const iframe = document.getElementById("gameIframe");
+      iframe.src = url;
+      document.getElementById("gameModal").style.display = "flex";
+    };
+
+    window.closeGameModal = function() {
+      const iframe = document.getElementById("gameIframe");
+      document.getElementById("gameModal").style.display = "none";
+      iframe.src = "";
+    };
+
+    window.onclick = function(event) {
+      const gameModal = document.getElementById("gameModal");
+      if (event.target == gameModal) closeGameModal();
+    };
+  </script>
+
+  <style>
+    html, body {
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+      color: #333;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 25px;
+      border: 5px solid #ffb6c1;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    h1 { font-size: 2.6em; color: #ff4081; text-shadow: 2px 2px #ffd700; }
+    h2 { font-size: 1.8em; color: #4682b4; margin-top: 15px; }
+
+    /* Profile */
+    .profile-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: none;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .profile-container:hover { transform: scale(1.05); }
+
+    .profile-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ff69b4; margin-right: 10px; }
+    .profile-name { font-size: 1.2em; color: #ff4081; text-shadow: 1px 1px #ffd700; margin: 0; }
+
+    .profile-details {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      text-align: left;
+      min-width: 200px;
+    }
+    .profile-details p { margin: 5px 0; font-size: 1em; color: #333; }
+    .profile-button {
+      display: block;
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #ff69b4;
+      color: white;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 3px #c2185b;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+    .profile-button:hover { background-color: #f06292; transform: scale(1.05); }
+    .profile-button:active { transform: scale(0.95); box-shadow: 0 1px #9c165c; }
+
+    /* Buttons */
+    .button {
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 15px auto 0;
+      background-color: #32cd32;
+      color: white;
+      text-decoration: none;
+      border-radius: 15px;
+      font-size: 1.2em;
+      transition: transform 0.2s, background-color 0.3s;
+      box-shadow: 0 5px 0 #228b22;
+      cursor: pointer;
+    }
+    .button:hover { background-color: #45a049; transform: scale(1.1); }
+    .button:active { transform: scale(0.95); box-shadow: 0 2px 0 #1c5e1c; }
+
+    /* Games */
+    .games-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin: 25px 0;
+      gap: 20px;
+    }
+
+    .game-item {
+      flex: 1 1 45%;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-radius: 15px;
+      border: 2px solid #ffd54f;
+      background: #fffde7;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .game-item:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.25); }
+    .game-item h3 { margin: 10px 0 5px; font-size: 1.2em; color: #d81b60; text-align: center; }
+    .game-item p { font-size: 0.9em; color: #555; margin-top: 5px; text-align: center; }
+
+    .responsive-iframe { position: relative; width: 100%; padding-top: 56.25%; margin-top: 10px; }
+    .responsive-iframe iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; border-radius: 10px; }
+
+    /* Modal */
+    .game-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 3000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: zoomIn 0.3s;
+    }
+    .game-modal iframe { width: 95%; height: 95%; border: 0; border-radius: 15px; }
+    .close { position: absolute; top: 10px; right: 20px; font-size: 28px; color: #ff4081; cursor: pointer; }
+    .close:hover { color: #d81b60; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .profile-container { padding: 8px 15px; top: 10px; left: 10px; }
+      .profile-img { width: 40px; height: 40px; }
+      .profile-name { font-size: 1em; }
+      .profile-details { top: 60px; min-width: 150px; }
+      .profile-details p { font-size: 0.9em; }
+      h1 { font-size: 2em; }
+      h2 { font-size: 1.4em; }
+      .button { font-size: 1em; padding: 10px 20px; }
+      .game-item { flex: 1 1 100%; }
+      .game-item h3 { font-size: 1em; }
+      .game-item p { font-size: 0.85em; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎮 เลือกเกม</h1>
-        <p>สนุกกับการเรียนรู้ผ่านเกมตอบคำถามจาก ZEP Quiz! เลือกเกมด้านล่างเพื่อเริ่ม:</p>
-        <a href="game_ethics.html" class="button ethics-button">เกมจริยธรรม</a>
-        <a href="game_tech.html" class="button tech-button">เกมเทคโนโลยี</a><br>
-        <a href="home.html" class="button back-button">กลับหน้าแรก</a>
+  <!-- Profile -->
+  <div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
+    <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
+    <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+    <div class="profile-details" id="profileDetails">
+      <p id="profileGrade">ชั้นเรียน</p>
+      <p id="profileGender">เพศ</p>
+      <p id="profileNumber">เลขที่</p>
+      <p id="profileSchool">โรงเรียน</p>
+      <p id="currentDate">วันที่</p>
+      <p id="currentTime">เวลา</p>
+      <p id="sessionTime">เวลาที่ใช้งาน</p>
+      <button class="profile-button" onclick="logout()">🚪 ออกจากระบบ</button>
     </div>
+  </div>
 
-    <script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-            if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-                try {
-                    var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                    var firstSheetName = workbook.SheetNames[0];
-                    var worksheet = workbook.Sheets[firstSheetName];
+  <div class="container">
+    <h1>🎮 เกมสนุก Zep</h1>
+    <section id="game">
+      <h2>เกมสนุก Zep (2 เกม)</h2>
+      <div class="games-container">
+        <div class="game-item" onclick="openGameModal('https://quiz.zep.us/th/play/kPxzoB')">
+          <h3>คลิ๊กกรอบสีเหลืองเพื่อขยายจอ</h3>
+          <div class="responsive-iframe">
+            <iframe src="https://quiz.zep.us/th/play/kPxzoB" allowfullscreen></iframe>
+          </div>
+          <p>ทดสอบความรู้ด้วยคำถามถูก-ผิด สนุกและได้เรียนรู้!</p>
+        </div>
+        <div class="game-item" onclick="openGameModal('https://quiz.zep.us/th/play/xEGowV')">
+          <h3>คลิ๊กกรอบสีเหลืองเพื่อขยายจอ</h3>
+          <div class="responsive-iframe">
+            <iframe src="https://quiz.zep.us/th/play/xEGowV" allowfullscreen></iframe>
+          </div>
+          <p>ทดสอบความรู้ด้วยคำถามถูก-ผิด สนุกและได้เรียนรู้!</p>
+        </div>
+      </div>
+      <button class="button" onclick="window.location.href='home.html'">กลับหน้าหลัก</button>
+    </section>
+  </div>
 
-                    var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                    var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                    var headerRowIndex = filteredData.findIndex((row, index) =>
-                        row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                    );
-                    if (headerRowIndex === -1 || headerRowIndex > 25) headerRowIndex = 0;
-
-                    var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
-                    csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                    return csv;
-                } catch (e) {
-                    console.error(e);
-                    return "";
-                }
-            }
-            return gk_fileData[filename] || "";
-        }
-    </script>
+  <!-- Modal -->
+  <div id="gameModal" class="game-modal">
+    <span class="close" onclick="closeGameModal()">&times;</span>
+    <iframe id="gameIframe" src="" allowfullscreen></iframe>
+  </div>
 </body>
 </html>
