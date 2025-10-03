@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทเรียนออนไลน์</title>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+      authDomain: "ppp5-b59d6.firebaseapp.com",
+      projectId: "ppp5-b59d6",
+      storageBucket: "ppp5-b59d6.appspot.com",
+      messagingSenderId: "562619004801",
+      appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+      measurementId: "G-H1DQRS4WVE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Check user authentication state
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+
+          // Set prefix based on gender
+          let prefix = "";
+          if (data.gender === "ชาย") prefix = "เด็กชาย ";
+          else if (data.gender === "หญิง") prefix = "เด็กหญิง ";
+
+          // Map grade to full text
+          const gradeMap = {
+            "ป.1": "ประถมศึกษาปีที่ 1",
+            "ป.2": "ประถมศึกษาปีที่ 2",
+            "ป.3": "ประถมศึกษาปีที่ 3",
+            "ป.4": "ประถมศึกษาปีที่ 4",
+            "ป.5": "ประถมศึกษาปีที่ 5",
+            "ป.6": "ประถมศึกษาปีที่ 6"
+          };
+          const fullGrade = gradeMap[data.grade] || data.grade;
+
+          // Update profile display
+          document.getElementById("profilePhoto").src = data.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+          document.getElementById("profileName").textContent = prefix + (data.name || "");
+          document.getElementById("profileGrade").textContent = "ชั้น: " + fullGrade;
+          document.getElementById("profileGender").textContent = "เพศ: " + (data.gender || "");
+          document.getElementById("profileNumber").textContent = "เลขที่: " + (data.number || "ไม่ระบุ");
+          document.getElementById("profileSchool").textContent = "โรงเรียน: " + (data.school || "ไม่ระบุ");
+          document.getElementById("profileContainer").style.display = "flex";
+
+          // Start timer and update times
+          let startTime = Date.now();
+          function updateTimes() {
+            // Current date and time
+            const now = new Date();
+            document.getElementById("currentDate").textContent = "วันที่: " + now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("currentTime").textContent = "เวลา: " + now.toLocaleTimeString('th-TH');
+
+            // Session time
+            const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
+            let sessionText;
+            if (elapsedMinutes < 60) {
+              sessionText = elapsedMinutes + " นาที";
+            } else {
+              const hours = Math.floor(elapsedMinutes / 60);
+              const mins = elapsedMinutes % 60;
+              sessionText = hours + " ชั่วโมง " + mins + " นาที";
+            }
+            document.getElementById("sessionTime").textContent = "เวลาที่ใช้งาน: " + sessionText;
+          }
+          setInterval(updateTimes, 1000);
+          updateTimes();
+
+        } else {
+          alert("ไม่พบข้อมูลผู้ใช้งาน");
+          window.location.href = "login.html";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    // Logout function
+    window.logout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    };
+
+    // Toggle profile details
+    window.toggleProfileDetails = function() {
+      const details = document.getElementById("profileDetails");
+      details.style.display = details.style.display === "block" ? "none" : "block";
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 25px;
+      border: 5px solid #ffb6c1;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Profile Section Styles */
+    .profile-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: none;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .profile-container:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff69b4;
+      margin-right: 10px;
+    }
+
+    .profile-name {
+      font-size: 1.2em;
+      color: #ff4081;
+      text-shadow: 1px 1px #ffd700;
+      margin: 0;
+    }
+
+    .profile-details {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      text-align: left;
+      min-width: 200px;
+    }
+
+    .profile-details p {
+      margin: 5px 0;
+      font-size: 1em;
+      color: #333;
+    }
+
+    .profile-button {
+      display: block;
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #ff69b4;
+      color: white;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 3px #c2185b;
+      transition: transform 0.2s, background-color 0.3s;
+      text-decoration: none;
+      text-align: center;
+    }
+    .profile-button:hover { background-color: #f06292; transform: scale(1.05); }
+    .profile-button:active { transform: scale(0.95); box-shadow: 0 1px #9c165c; }
+
+    h1 { font-size: 2.6em; color: #ff4081; text-shadow: 2px 2px #ffd700; }
+    h2 { font-size: 1.8em; color: #4682b4; margin-top: 15px; }
+
+    .button {
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 15px auto 0;
+      background-color: #32cd32;
+      color: white;
+      text-decoration: none;
+      border-radius: 15px;
+      font-size: 1.2em;
+      transition: transform 0.2s, background-color 0.3s;
+      box-shadow: 0 5px 0 #228b22;
+      text-align: center;
+      cursor: pointer;
+    }
+    .button:hover { background-color: #45a049; transform: scale(1.1); }
+    .button:active { transform: scale(0.95); box-shadow: 0 2px 0 #1c5e1c; }
+
+    ul { padding-left: 0; list-style: none; text-align: left; }
+    li { margin: 10px 0; font-size: 1.1em; }
+
+    .responsive-iframe {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      margin: 15px 0;
+    }
+    .responsive-iframe iframe,
+    .responsive-iframe video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .responsive-form { padding-top: 120%; }
+    @media (max-width: 768px) { .responsive-form { padding-top: 140%; } }
+
+    .games-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .game-item {
+      flex: 0 0 45%;
+      padding: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border-radius: 15px;
+      border: 2px solid #ffd54f;
+      background: #fffde7;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+    }
+
+    .game-item h3 { margin: 10px 0; font-size: 1.4em; color: #d81b60; }
+    .game-item p { font-size: 0.9em; color: #555; margin: 10px 0 0; }
+
+    .lesson-frame {
+      background: #f0f8ff;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      margin: 20px 0;
+    }
+    .lesson-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .lesson-card h3 { color: #d81b60; margin-bottom: 10px; }
+    .lesson-card p { margin: 10px 0 5px; cursor: pointer; text-align: left; }
+    .lesson-card img.highlight {
+      width: 90%;
+      max-width: 500px;
+      display: block;
+      margin: 10px auto 20px;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Lightbox Overlay */
+    #lightboxOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    #lightboxContent {
+      position: relative;
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+    #lightboxContent img {
+      width: 80vw;
+      max-width: 80%;
+      height: auto;
+      max-height: 80vh;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transition: transform 0.3s;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #lightboxClose {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      background: #ff4081;
+      color: white;
+      border: none;
+      font-size: 1.5em;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10000;
+    }
+
+    @media (max-width: 480px) {
+      .profile-container { padding: 8px 15px; top: 10px; left: 10px; }
+      .profile-img { width: 40px; height: 40px; }
+      .profile-name { font-size: 1em; }
+      .profile-details { top: 60px; min-width: 150px; }
+      .profile-details p { font-size: 0.9em; }
+    }
+
+    /* Modal */
+    .game-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .game-modal iframe {
+      width: 90%;
+      height: 90%;
+      border: 0;
+      border-radius: 15px;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      color: #ff4081;
+      cursor: pointer;
+    }
+
+    .close:hover { color: #d81b60; }
+  </style>
+</head>
+<body>
+
+<!-- Profile Section -->
+<div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
+  <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
+  <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+  <div class="profile-details" id="profileDetails">
+    <p id="profileGrade">ชั้นเรียน</p>
+    <p id="profileGender">เพศ</p>
+    <p id="profileNumber">เลขที่</p>
+    <p id="profileSchool">โรงเรียน</p>
+    <p id="currentDate">วันที่</p>
+    <p id="currentTime">เวลา</p>
+    <p id="sessionTime">เวลที่ใช้งาน</p>
+    <button class="profile-button" onclick="logout()">🚪 ออกจากระบบ</button>
+  </div>
+</div>
+
+<div class="container">
+  <h1>บทเรียนออนไลน์ : เทคโนโลยีอย่างปลอดภัยและจริยธรรม</h1>
+
+  <!-- 1. Pre-Test -->
+  <section id="pretest">
+    <h2>แบบทดสอบก่อนเรียน</h2>
+    <div class="responsive-iframe responsive-form">
+      <iframe src="https://forms.gle/fd2n21cWVz6eU3ej7">กำลังโหลด...</iframe>
+    </div>
+    <button class="button" onclick="nextStep('story')">เสร็จแล้ว → อ่านนิทาน</button>
+  </section>
+
+  <section id="story" style="display:none;">
+    <h2>นิทานสอนใจ</h2>
+    <p>📖 บทเรียนของนัทกับโลกดิจิทัล</p>
+    <a href="https://g.co/gemini/share/a246e62244e8" target="_blank">
+      <img src="img/nut.png" 
+           alt="นิทานสอนใจ" 
+           style="width:90%; max-width:600px; cursor:pointer; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+    </a>
+    <br><br>
+    <button class="button" onclick="nextStep('lesson1')">ต่อไป → บทเรียนที่ 1</button>
+  </section>
+
+  <!-- 3.1 Lesson 1 -->
+  <section id="lesson1" style="display:none;">
+    <h2>บทเรียนที่ 1: จริยธรรมในการใช้เทคโนโลยี</h2>
+    <div class="responsive-iframe">
+      <iframe src="https://www.youtube.com/embed/YXy5rxySx-k" allowfullscreen></iframe>
+    </div>
+    <div class="responsive-iframe">
+      <video controls>
+        <source src="videos/1.mp4" type="video/mp4">
+        เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+      </video>
+    </div>
+
+    <div class="lesson-frame">
+      <div class="lesson-card">
+        <h3>1. มารยาทและจริยธรรมในการใช้เทคโนโลยีสารสนเทศ</h3>
+        <p onclick="speakText('มารยาท คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ')"><b>มารยาท</b> คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ</p>
+        <img src="img/5.png" alt="พูดจาสุภาพ" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('จริยธรรม คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง')"><b>จริยธรรม</b> คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง</p>
+        <img src="img/4.jpg" alt="ทำสิ่งที่ถูกต้อง" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข')">
+          การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข
+        </p>
+      </div>
+
+      <div class="lesson-card">
+        <h3>2. บัญญัติ 10 ประการเกี่ยวกับมารยาทในการใช้เทคโนโลยีสารสนเทศ</h3>
+        <p onclick="speakText('ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น')">1. ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น</p>
+        <img src="img/6.jpg" alt="ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่รบกวนการทำงานของผู้อื่น')">2. ไม่รบกวนการทำงานของผู้อื่น</p>
+        <img src="img/7.png" alt="ไม่รบกวนการทำงานของผู้อื่น" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น')">3. ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น</p>
+        <img src="img/8.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล')">4. ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล</p>
+        <img src="img/9.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่สร้างหลักฐานเท็จ')">5. ไม่สร้างหลักฐานเท็จ</p>
+        <img src="img/10.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์')">6. ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์</p>
+        <img src="img/11.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น')">7. ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น</p>
+        <img src="img/12.jpg" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่นำผลงานของผู้อื่นเป็นของตน')">8. ไม่นำผลงานของผู้อื่นเป็นของตน</p>
+        <img src="img/13.jpg" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน')">9. คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน</p>
+        <img src="img/14.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท')">10. ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท</p>
+        <img src="https://jpjetiya.wordpress.com/wp-content/uploads/2015/08/images9.jpg" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+      </div>
+    </div>
+
+    <button class="button" onclick="nextStep('lesson2')">ต่อไป → บทเรียนที่ 2</button>
+  </section>
+
+  <!-- 3.2 Lesson 2 -->
+  <section id="lesson2" style="display:none;">
+    <h2>บทเรียนที่ 2: เทคโนโลยีที่ปลอดภัย</h2>
+    <div class="responsive-iframe">
+      <iframe src="https://www.youtube.com/embed/KpRoNZrROe0" allowfullscreen></iframe>
+    </div>
+    <div class="responsive-iframe">
+      <video controls>
+        <source src="videos/2.mp4" type="video/mp4">
+        เบราว์เซอร์ของคุณไม่รองรับการเล่นวิดีโอ
+      </video>
+    </div>
+
+    <div class="lesson-frame">
+      <div class="lesson-card">
+        <h3>1. การใช้เทคโนโลยีสารสนเทศอย่างเหมาะสมและปลอดภัย</h3>
+        <p onclick="speakText('การใช้เทคโนโลยีสารสนเทศอาจต้องติดต่อหรือเกี่ยวข้องกับบุคคลต่าง ๆ มากมาย ซึ่งอาจเป็นบุคคลที่เรารู้จักและไม่รู้จัก การมีมารยาทที่ดี ในการติดต่อ สื่อสารจะช่วยสร้างมิตรภาพที่ดีของการอยู่ร่วมกันในสังคม และควรป้องกันตนเอง จากคนที่ไม่รู้จักหรือคนร้าย ซึ่งจะนำความเดือดร้อนและสร้างความเสียหายให้แก่เรา อันตรายที่แอบแฝงมากับการใช้เทคโนโลยีสารสนเทศ')">
+          การใช้เทคโนโลยีสารสนเทศอาจต้องติดต่อหรือเกี่ยวข้องกับบุคคลต่าง ๆ มากมาย ซึ่งอาจเป็นบุคคลที่เรารู้จักและไม่รู้จัก การมีมารยาทที่ดี ในการติดต่อ สื่อสารจะช่วยสร้างมิตรภาพที่ดีของการอยู่ร่วมกันในสังคม และควรป้องกันตนเอง จากคนที่ไม่รู้จักหรือคนร้าย ซึ่งจะนำความเดือดร้อนและสร้างความเสียหายให้แก่เรา อันตรายที่แอบแฝงมากับการใช้เทคโนโลยีสารสนเทศ
+        </p>
+        <p onclick="speakText('ไม่แชร์ข้อมูลส่วนตัว เช่น ชื่อ ที่อยู่ หรือรหัสผ่าน')">
+          ✨ ไม่แชร์ข้อมูลส่วนตัว เช่น ชื่อ ที่อยู่ หรือรหัสผ่าน
+        </p>
+        <img src="img/20.jpg" alt="รักษาข้อมูลส่วนตัวให้ปลอดภัย" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('ไม่แชร์ข้อมูลส่วนตัว เช่น ชื่อ ที่อยู่ หรือรหัสผ่าน')">
+
+        <p onclick="speakText('หลีกเลี่ยงการคลิกลิงก์ที่ไม่น่าเชื่อถือ')">
+          🚫 หลีกเลี่ยงการคลิกลิงก์ที่ไม่น่าเชื่อถือ
+        </p>
+        <img src="img/17.jpg" alt="อย่าคลิกลิงก์ที่น่าสงสัย" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('หลีกเลี่ยงการคลิกลิงก์ที่ไม่น่าเชื่อถือ')">
+      </div>
+
+      <div class="lesson-card">
+        <h3>2. อันตรายที่แอบแฝงมากับการใช้เทคโนโลยี</h3>
+        <p>ถ้าไม่ระมัดระวัง อาจเกิดอันตราย เช่น การถูกหลอก หรือเสพข้อมูลที่ไม่ดี</p>
+        <p onclick="speakText('ได้รับสารสนเทศจำนวนมากมาย ซึงมีทั้งดีและไม่ดีส่งตรงถึงตัวเรา')">📚 ได้รับสารสนเทศจำนวนมากมาย ซึงมีทั้งดีและไม่ดีส่งตรงถึงตัวเรา</p>
+        <img src="img/2.jpg" alt="เลือกข้อมูลที่น่าเชื่อถือ" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('ได้รับสารสนเทศจำนวนมากมาย ซึงมีทั้งดีและไม่ดีส่งตรงถึงตัวเรา')">
+
+        <p onclick="speakText('คนแปลกหน้าหรือผู้ไม่ประสงค์ดีใช้เทคโนโลยีสารสนเทศเป็นช่องทางหาเหยื่อ เราอาจตกเป็นผู ้ถูกกระทำหรือเป็นผู้กระทำเสียเอง')">👤 คนแปลกหน้าหรือผู้ไม่ประสงค์ดีใช้เทคโนโลยีสารสนเทศเป็นช่องทางหาเหยื่อ เราอาจตกเป็นผู ้ถูกกระทำหรือเป็นผู้กระทำเสียเอง</p>
+        <img src="img/3.jpg" alt="ระวังคนแปลกหน้าออนไลน์" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('คนแปลกหน้าหรือผู้ไม่ประสงค์ดีใช้เทคโนโลยีสารสนเทศเป็นช่องทางหาเหยื่อ เราอาจตกเป็นผู ้ถูกกระทำหรือเป็นผู้กระทำเสียเอง')">
+
+        <p onclick="speakText('สังคมออนไลน์การรวมกลุ่ม ค่านิยม แฟชั่น ทำให้เด็กและเยาวชนคล้อยตาม ตกเป็นทาสของ เทคโนโลยีความฟุ้งเฟ้อ ความเชื่อผิด ๆ')">⚠️ คิดก่อนคล้อยตามกระแส</p>
+        <img src="img/1.jpg" alt="คิดก่อนคล้อยตามกระแส" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('สังคมออนไลน์การรวมกลุ่ม ค่านิยม แฟชั่น ทำให้เด็กและเยาวชนคล้อยตาม ตกเป็นทาสของ เทคโนโลยีความฟุ้งเฟ้อ ความเชื่อผิด ๆ')">
+
+        <p onclick="speakText('ง่าย แพร่หลาย ราคาถูก ทำให้เสี่ยงต่อ การกระทำผิดกฎหมาย ผิดศีลธรรม ทั้งที่รู้เท่าไม่ถึงการณ์หรือโดยเจตนาก็ตาม')">💡 ใช้เทคโนโลยีอย่างมีจริยธรรม</p>
+        <img src="img/18.png" alt="ใช้เทคโนโลยีอย่างมีจริยธรรม" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('ง่าย แพร่หลาย ราคาถูก ทำให้เสี่ยงต่อ การกระทำผิดกฎหมาย ผิดศีลธรรม ทั้งที่รู้เท่าไม่ถึงการณ์หรือโดยเจตนาก็ตาม')">
+
+        <p onclick="speakText('เล่นเกมออนไลน์มากเกินไปส่งผลเสีย')">🎮 เล่นเกมอย่างมีขอบเขต</p>
+        <img src="img/21.jpg" alt="เล่นเกมอย่างมีขอบเขต" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('การใช้เวลากับเกมในโลกออนไลน์มากจนเกินไป ส่งผลในด้านลบอาจทำให้เสียโอกาสการเรียนรู้ในด้านอื่น ๆ และเสียสุขภาพร่างกายจิตใจ')">
+
+        <p onclick="speakText('ตรวจสอบข้อมูลก่อนแชร์เพื่อป้องกันผลเสีย')">🔍 ตรวจสอบก่อนแชร์ข้อมูล</p>
+        <img src="img/19.jpg" alt="ตรวจสอบก่อนแชร์ข้อมูล" class="highlight" onclick="showFullscreen(this.src, this.alt); speakText('การแชร์ข้อมูลที่ได้รับจากการส่งต่อ บางครั้งข้อมูลที่ได้รับอาจไม่ถูกต้องเมื่อแชร์ต่อไปอาจเกิดผลเสียต่อตนเองและผู้อื่น ทั้งยังเป็นการกระทำความผิดตามพระราชบัญญัติคอมพิวเตอร์อีกด้วย')">
+      </div>
+    </div>
+
+    <button class="button" onclick="nextStep('game')">ต่อไป → เล่นเกม</button>
+  </section>
+
+  <!-- 4. Games -->
+  <section id="game" style="display:none;">
+    <h2>เกมสนุก Zep (2 เกม)</h2>
+    <div class="games-container">
+      <div class="game-item" onclick="openGameModal('https://quiz.zep.us/th/play/kPxzoB')">
+        <h3>เกม OX Quiz</h3>
+        <div class="responsive-iframe">
+          <iframe src="https://quiz.zep.us/th/play/kPxzoB"></iframe>
+        </div>
+        <p>ทดสอบความรู้ด้วยคำถามถูก-ผิด สนุกและได้เรียนรู้!</p>
+      </div>
+
+      <div class="game-item" onclick="openGameModal('https://quiz.zep.us/th/play/xEGowV')">
+        <h3>เกม Zombie Escape</h3>
+        <div class="responsive-iframe">
+          <iframe src="https://quiz.zep.us/th/play/xEGowV"></iframe>
+        </div>
+        <p>วิ่งหนีซอมบี้ในโลกเสมือนจริง ตื่นเต้นสุด ๆ!</p>
+      </div>
+    </div>
+
+    <button class="button" onclick="nextStep('posttest')">เสร็จแล้ว → แบบทดสอบหลังเรียน</button>
+  </section>
+
+  <!-- Modal -->
+  <div id="gameModal" class="game-modal">
+    <span class="close" onclick="closeGameModal()">&times;</span>
+    <iframe id="gameIframe" src="" allowfullscreen></iframe>
+  </div>
+
+  <!-- 5. Post-Test -->
+  <section id="posttest" style="display:none;">
+    <h2>แบบทดสอบหลังเรียน</h2>
+    <div class="responsive-iframe responsive-form">
+      <iframe src="https://forms.gle/ryso5zagX5ws6qCa9">กำลังโหลด...</iframe>
+    </div>
+    <button class="button" onclick="nextStep('survey')">ต่อไป → แบบประเมิน</button>
+  </section>
+
+  <!-- 6. Survey -->
+  <section id="survey" style="display:none;">
+    <h2>แบบประเมินความพึงพอใจ</h2>
+    <div class="responsive-iframe responsive-form">
+      <iframe src="https://forms.gle/gW2ahC9X9fRQgKJU8">กำลังโหลด...</iframe>
+    </div>
+    <p>🎉 ขอบคุณที่เรียนรู้และทำกิจกรรมครบทุกขั้นตอน</p>
+    <button class="button" onclick="window.location.href='home.html'">🏠 กลับสู่หน้าหลัก</button>
+  </section>
+</div>
+
+<!-- Lightbox -->
+<div id="lightboxOverlay" onclick="closeLightbox()">
+  <div id="lightboxContent" onclick="event.stopPropagation()">
+    <button id="lightboxClose" onclick="closeLightbox()">×</button>
+    <img id="lightboxImage" src="" alt="">
+  </div>
+</div>
+
+<script>
+  function nextStep(stepId) {
+    document.querySelectorAll("section").forEach(sec => sec.style.display = "none");
+    document.getElementById(stepId).style.display = "block";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showFullscreen(src, alt) {
+    const overlay = document.getElementById('lightboxOverlay');
+    const img = document.getElementById('lightboxImage');
+    img.src = src;
+    img.alt = alt;
+    overlay.style.display = 'flex';
+    speakText(alt);
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightboxOverlay').style.display = 'none';
+  }
+
+  function openGameModal(url) {
+    const iframe = document.getElementById("gameIframe");
+    iframe.src = url;
+    document.getElementById("gameModal").style.display = "flex";
+  }
+
+  function closeGameModal() {
+    const iframe = document.getElementById("gameIframe");
+    iframe.src = "";
+    document.getElementById("gameModal").style.display = "none";
+  }
+
+  // ปิด modal เมื่อคลิกนอก iframe
+  window.onclick = function(event) {
+    const gameModal = document.getElementById("gameModal");
+    if (event.target == gameModal) closeGameModal();
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") closeLightbox();
+  });
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'th-TH';
+      window.speechSynthesis.speak(utter);
+    }
+  }
+</script>
+
+</body>
+</html>
