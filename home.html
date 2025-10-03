@@ -1,204 +1,329 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ยินดีต้อนรับสู่การเรียนรู้จริยธรรมและเทคโนโลยี</title>
-<style>
-  body {
-    font-family: 'Comic Sans MS', Arial, sans-serif;
-    background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-  }
-  .container {
-    background: white;
-    border: 5px solid #ff69b4;
-    border-radius: 25px;
-    padding: 30px;
-    max-width: 700px;
-    margin: 40px auto;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-    animation: fadeIn 1s ease-in-out;
-  }
-  #welcomeText {
-    font-size: 2.8em;
-    font-weight: bold;
-    color: #ff1493;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-    margin-bottom: 20px;
-    transition: transform 0.3s, color 0.3s;
-  }
-  #welcomeText:hover { transform: scale(1.1); color: #1e90ff; }
-  p {
-    font-size: 1.6em;
-    color: #1e90ff;
-    font-weight: bold;
-    margin-bottom: 30px;
-    transition: transform 0.3s, color 0.3s;
-  }
-  p:hover { transform: scale(1.05); color: #ff1493; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ยินดีต้อนรับสู่การเรียนรู้จริยธรรมและเทคโนโลยี</title>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-  .button {
-    display: inline-block;
-    padding: 15px 30px;
-    margin: 10px;
-    background-color: #4caf50;
-    color: white;
-    text-decoration: none;
-    border-radius: 20px;
-    font-size: 1.2em;
-    box-shadow: 0 5px 0 #388e3c;
-    transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
-  }
-  .button:hover { background-color: #45a049; transform: scale(1.1); }
-  .game-button { background-color: #ff69b4; box-shadow: 0 5px 0 #c2185b; }
-  .game-button:hover { background-color: #f06292; }
-  .test-button { background-color: #ffa500; box-shadow: 0 5px 0 #e65100; }
-  .test-button:hover { background-color: #ff9800; }
-  .logout-button { background-color: #f44336; box-shadow: 0 5px 0 #c62828; }
-  .logout-button:hover { background-color: #e53935; }
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+      authDomain: "ppp5-b59d6.firebaseapp.com",
+      projectId: "ppp5-b59d6",
+      storageBucket: "ppp5-b59d6.appspot.com",
+      messagingSenderId: "562619004801",
+      appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+      measurementId: "G-H1DQRS4WVE"
+    };
 
-  #profilePic {
-    width:100px; height:100px; border-radius:50%;
-    border:2px solid #ff69b4; margin-bottom:10px; cursor:pointer;
-    transition: transform 0.3s, border-color 0.3s;
-  }
-  #profilePic:hover { transform: scale(1.2); border-color: #1e90ff; }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  #username { font-weight:bold; font-size:1.3em; margin-bottom:20px; display:block; }
+    const quotes = [
+      "📚 การเรียนรู้คือความสนุก!",
+      "🌟 จงใจดีและช่วยเหลือเพื่อนเสมอ",
+      "💡 ความอยากรู้ทำให้เราเก่งขึ้น",
+      "🎨 ความคิดสร้างสรรค์ทำให้ชีวิตสดใส",
+      "⚽ เล่นกีฬาอย่างยุติธรรมและสนุกสนาน",
+      "🎵 ดนตรีทำให้หัวใจมีความสุข",
+      "🌳 ออกสำรวจโลกด้วยความสนุก",
+      "🎮 เกมสนุก แต่การเรียนก็สำคัญ",
+      "📖 การอ่านเปิดโลกใหม่ให้เรา"
+    ];
 
-  @keyframes fadeIn { from {opacity:0;transform:scale(0.9);} to {opacity:1;transform:scale(1);} }
+    // Check user authentication state
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+          const userName = user.displayName || user.email.split('@')[0];
 
-  #profileModal {
-    display:none;
-    position:fixed;
-    top:0; left:0;
-    width:100%; height:100%;
-    background:rgba(0,0,0,0.5);
-    justify-content:center; align-items:center;
-    z-index:1000;
-  }
-  #profileModalContent {
-    background:white;
-    border-radius:25px;
-    padding:30px;
-    max-width:400px;
-    text-align:center;
-    position:relative;
-    animation: fadeIn 0.3s ease-in-out;
-  }
-  #closeModal { position:absolute; top:10px; right:15px; cursor:pointer; font-size:20px; }
-  #modalProfilePic { width:150px; height:150px; border-radius:50%; border:3px solid #ff69b4; margin-bottom:20px; }
-  #modalUsername { font-size:1.5em; font-weight:bold; margin-bottom:15px; }
-  #modalQuote { font-size:1.2em; color:#555; font-style:italic; margin-bottom:20px; }
-</style>
+          // Set prefix based on gender
+          let prefix = "";
+          if (data.gender === "ชาย") prefix = "เด็กชาย ";
+          else if (data.gender === "หญิง") prefix = "เด็กหญิง ";
+
+          // Map grade to full text
+          const gradeMap = {
+            "ป.1": "ประถมศึกษาปีที่ 1",
+            "ป.2": "ประถมศึกษาปีที่ 2",
+            "ป.3": "ประถมศึกษาปีที่ 3",
+            "ป.4": "ประถมศึกษาปีที่ 4",
+            "ป.5": "ประถมศึกษาปีที่ 5",
+            "ป.6": "ประถมศึกษาปีที่ 6"
+          };
+          const fullGrade = gradeMap[data.grade] || data.grade;
+
+          // Random avatar
+          const totalAvatars = 11;
+          const randomIndex = Math.floor(Math.random() * totalAvatars) + 1;
+          const avatarSrc = `avatars/${randomIndex}.jpg`;
+
+          // Update profile display
+          document.getElementById("profilePhoto").src = data.photoURL || avatarSrc;
+          document.getElementById("profileName").textContent = prefix + (data.name || userName);
+          document.getElementById("profileGrade").textContent = "ชั้น: " + fullGrade;
+          document.getElementById("profileGender").textContent = "เพศ: " + (data.gender || "");
+          document.getElementById("profileNumber").textContent = "เลขที่: " + (data.number || "ไม่ระบุ");
+          document.getElementById("profileSchool").textContent = "โรงเรียน: " + (data.school || "ไม่ระบุ");
+          document.getElementById("profileQuote").textContent = quotes[Math.floor(Math.random() * quotes.length)];
+          document.getElementById("profileContainer").style.display = "flex";
+
+          // Update welcome text
+          document.getElementById("welcomeText").textContent = "🎉 ยินดีต้อนรับ " + (prefix + (data.name || userName)) + " 🎉";
+
+          // Start timer and update times
+          let startTime = Date.now();
+          function updateTimes() {
+            // Current date and time
+            const now = new Date();
+            document.getElementById("currentDate").textContent = "วันที่: " + now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("currentTime").textContent = "เวลา: " + now.toLocaleTimeString('th-TH');
+
+            // Session time
+            const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
+            let sessionText;
+            if (elapsedMinutes < 60) {
+              sessionText = elapsedMinutes + " นาที";
+            } else {
+              const hours = Math.floor(elapsedMinutes / 60);
+              const mins = elapsedMinutes % 60;
+              sessionText = hours + " ชั่วโมง " + mins + " นาที";
+            }
+            document.getElementById("sessionTime").textContent = "เวลาที่ใช้งาน: " + sessionText;
+          }
+          setInterval(updateTimes, 1000);
+          updateTimes();
+
+        } else {
+          alert("ไม่พบข้อมูลผู้ใช้งาน");
+          window.location.href = "login.html";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    // Logout function
+    window.logout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      }).catch((error) => {
+        console.log("เกิดข้อผิดพลาดตอน Logout:", error);
+      });
+    };
+
+    // Toggle profile details
+    window.toggleProfileDetails = function() {
+      const details = document.getElementById("profileDetails");
+      details.style.display = details.style.display === "block" ? "none" : "block";
+    };
+  </script>
+  <style>
+    html, body {
+      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+      color: #333;
+      line-height: 1.6;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 25px;
+      border: 5px solid #ffb6c1;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Profile Section Styles */
+    .profile-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: none;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .profile-container:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff69b4;
+      margin-right: 10px;
+    }
+
+    .profile-name {
+      font-size: 1.2em;
+      color: #ff4081;
+      text-shadow: 1px 1px #ffd700;
+      margin: 0;
+    }
+
+    .profile-details {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      text-align: left;
+      min-width: 200px;
+    }
+
+    .profile-details p {
+      margin: 5px 0;
+      font-size: 1em;
+      color: #333;
+    }
+
+    .profile-button {
+      display: block;
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #ff69b4;
+      color: white;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 3px #c2185b;
+      transition: transform 0.2s, background-color 0.3s;
+      text-decoration: none;
+      text-align: center;
+    }
+    .profile-button:hover { background-color: #f06292; transform: scale(1.05); }
+    .profile-button:active { transform: scale(0.95); box-shadow: 0 1px #9c165c; }
+
+    h1 { 
+      font-size: 2.6em; 
+      color: #ff4081; 
+      text-shadow: 2px 2px #ffd700; 
+      margin: 20px 0;
+    }
+
+    p {
+      font-size: 1.2em;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 15px;
+      background-color: #32cd32;
+      color: white;
+      text-decoration: none;
+      border-radius: 15px;
+      font-size: 1.2em;
+      transition: transform 0.2s, background-color 0.3s;
+      box-shadow: 0 5px 0 #228b22;
+      text-align: center;
+      cursor: pointer;
+    }
+    .button:hover { background-color: #45a049; transform: scale(1.1); }
+    .button:active { transform: scale(0.95); box-shadow: 0 2px 0 #1c5e1c; }
+
+    .game-button {
+      background-color: #ff69b4;
+      box-shadow: 0 5px 0 #c2185b;
+    }
+    .game-button:hover { background-color: #f06292; }
+    .game-button:active { transform: scale(0.95); box-shadow: 0 2px 0 #9c165c; }
+
+    .test-button {
+      background-color: #ffa500;
+      box-shadow: 0 5px 0 #e65100;
+    }
+    .test-button:hover { background-color: #ff9800; }
+    .test-button:active { transform: scale(0.95); box-shadow: 0 2px 0 #cc4c00; }
+
+    .button-container {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      .profile-container { padding: 8px 15px; top: 10px; left: 10px; }
+      .profile-img { width: 40px; height: 40px; }
+      .profile-name { font-size: 1em; }
+      .profile-details { top: 60px; min-width: 150px; }
+      .profile-details p { font-size: 0.9em; }
+      h1 { font-size: 2em; }
+      .button { font-size: 1em; padding: 10px 20px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <img id="profilePic" src="avatars/1.jpg" alt="โปรไฟล์">
-  <span id="username">ผู้ใช้</span>
-
-  <h1 id="welcomeText">🎉 ยินดีต้อนรับ 🎉</h1>
-  <p>มาเรียนรู้วิธีใช้เทคโนโลยีอย่างปลอดภัยและมีจริยธรรมกันเถอะ!</p>
-
-  <a href="lessons.html" class="button">📘 เริ่มเรียน</a>
-  <a href="https://g.co/gemini/share/a7ec6c4fa0df" target="_blank" class="button game-button">📖 อ่านนิทาน</a>
-  <a href="games.html" class="button game-button">🎮 เล่นเกม</a>
-  <a href="tests.html" class="button test-button">📝 ทำแบบทดสอบ</a>
-  <br>
-  <button id="logoutBtn" class="button logout-button">🚪 ออกจากระบบ</button>
-</div>
-
-<div id="profileModal">
-  <div id="profileModalContent">
-    <span id="closeModal">✖</span>
-    <img id="modalProfilePic" src="">
-    <div id="modalUsername">ผู้ใช้</div>
-    <div id="modalQuote">คำคมของคุณจะปรากฏที่นี่</div>
+<!-- Profile Section -->
+<div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
+  <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
+  <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+  <div class="profile-details" id="profileDetails">
+    <p id="profileGrade">ชั้นเรียน</p>
+    <p id="profileGender">เพศ</p>
+    <p id="profileNumber">เลขที่</p>
+    <p id="profileSchool">โรงเรียน</p>
+    <p id="profileQuote"></p>
+    <p id="currentDate">วันที่</p>
+    <p id="currentTime">เวลา</p>
+    <p id="sessionTime">เวลาที่ใช้งาน</p>
+    <button class="profile-button" onclick="logout()">🚪 ออกจากระบบ</button>
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+<div class="container">
+  <h1 id="welcomeText">🎉 ยินดีต้อนรับ 🎉</h1>
+  <p>มาเรียนรู้วิธีใช้เทคโนโลยีอย่างปลอดภัยและมีจริยธรรมกันเถอะ!</p>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
-  authDomain: "ppp5-b59d6.firebaseapp.com",
-  projectId: "ppp5-b59d6",
-  storageBucket: "ppp5-b59d6.appspot.com",
-  messagingSenderId: "562619004801",
-  appId: "1:562619004801:web:ab2e288ddc583ef143da80",
-  measurementId: "G-H1DQRS4WVE"
-};
+  <div class="button-container">
+    <a href="lessons.html" class="button">📘 เริ่มเรียน</a>
+    <a href="https://g.co/gemini/share/a7ec6c4fa0df" target="_blank" class="button game-button">📖 อ่านนิทาน</a>
+    <a href="games.html" class="button game-button">🎮 เล่นเกม</a>
+  </div>
+</div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const quotes = [
-  "📚 การเรียนรู้คือความสนุก!",
-  "🌟 จงใจดีและช่วยเหลือเพื่อนเสมอ",
-  "💡 ความอยากรู้ทำให้เราเก่งขึ้น",
-  "🎨 ความคิดสร้างสรรค์ทำให้ชีวิตสดใส",
-  "⚽ เล่นกีฬาอย่างยุติธรรมและสนุกสนาน",
-  "🎵 ดนตรีทำให้หัวใจมีความสุข",
-  "🌳 ออกสำรวจโลกด้วยความสนุก",
-  "🎮 เกมสนุก แต่การเรียนก็สำคัญ",
-  "📖 การอ่านเปิดโลกใหม่ให้เรา"
-];
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const userName = user.displayName || user.email.split('@')[0];
-    document.getElementById("username").textContent = "👤 " + userName;
-    document.getElementById("welcomeText").textContent = "🎉 ยินดีต้อนรับ " + userName + " 🎉";
-
-    const totalAvatars = 11; 
-    const randomIndex = Math.floor(Math.random() * totalAvatars) + 1;
-    const avatarSrc = `avatars/${randomIndex}.jpg`;
-    document.getElementById("profilePic").src = avatarSrc;
-
-    const profilePic = document.getElementById("profilePic");
-    const profileModal = document.getElementById("profileModal");
-
-    const showProfileModal = () => {
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      document.getElementById("modalProfilePic").src = avatarSrc;
-      document.getElementById("modalUsername").textContent = userName;
-      document.getElementById("modalQuote").textContent = randomQuote;
-      profileModal.style.display = "flex";
-    };
-
-    profilePic.addEventListener("mouseenter", showProfileModal);
-    profilePic.addEventListener("click", showProfileModal);
-
-    const hideProfileModal = () => {
-      if (!profilePic.matches(':hover') && !profileModal.matches(':hover')) {
-        profileModal.style.display = "none";
-      }
-    };
-    profilePic.addEventListener("mouseleave", hideProfileModal);
-    profileModal.addEventListener("mouseleave", hideProfileModal);
-
-  } else {
-    window.location.href = "login.html";
-  }
-});
-
-document.getElementById("closeModal").addEventListener("click", () => {
-  document.getElementById("profileModal").style.display = "none";
-});
-
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  }).catch((error) => {
-    console.log("เกิดข้อผิดพลาดตอน Logout:", error);
-  });
-});
-</script>
 </body>
 </html>
