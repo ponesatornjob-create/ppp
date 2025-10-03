@@ -1,92 +1,304 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เลือกบทเรียน</title>
-<style>
-    body {
-        font-family: 'Prompt', 'Arial', sans-serif;
-        background-color: #e6f3fa;
-        text-align: center;
-        margin: 0;
-        padding: 20px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เลือกบทเรียน</title>
+  <!-- Firebase SDK remains unchanged -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    // Firebase Config and JavaScript remain unchanged
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+      authDomain: "ppp5-b59d6.firebaseapp.com",
+      projectId: "ppp5-b59d6",
+      storageBucket: "ppp5-b59d6.appspot.com",
+      messagingSenderId: "562619004801",
+      appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+      measurementId: "G-H1DQRS4WVE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+
+          let prefix = "";
+          if (data.gender === "ชาย") prefix = "เด็กชาย ";
+          else if (data.gender === "หญิง") prefix = "เด็กหญิง ";
+
+          const gradeMap = {
+            "ป.1": "ประถมศึกษาปีที่ 1",
+            "ป.2": "ประถมศึกษาปีที่ 2",
+            "ป.3": "ประถมศึกษาปีที่ 3",
+            "ป.4": "ประถมศึกษาปีที่ 4",
+            "ป.5": "ประถมศึกษาปีที่ 5",
+            "ป.6": "ประถมศึกษาปีที่ 6"
+          };
+          const fullGrade = gradeMap[data.grade] || data.grade;
+
+          document.getElementById("profilePhoto").src = data.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+          document.getElementById("profileName").textContent = prefix + (data.name || "");
+          document.getElementById("profileGrade").textContent = "ชั้น: " + fullGrade;
+          document.getElementById("profileGender").textContent = "เพศ: " + (data.gender || "");
+          document.getElementById("profileNumber").textContent = "เลขที่: " + (data.number || "ไม่ระบุ");
+          document.getElementById("profileSchool").textContent = "โรงเรียน: " + (data.school || "ไม่ระบุ");
+          document.getElementById("profileContainer").style.display = "flex";
+
+          let startTime = Date.now();
+          function updateTimes() {
+            const now = new Date();
+            document.getElementById("currentDate").textContent = "วันที่: " + now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("currentTime").textContent = "เวลา: " + now.toLocaleTimeString('th-TH');
+
+            const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
+            let sessionText;
+            if (elapsedMinutes < 60) {
+              sessionText = elapsedMinutes + " นาที";
+            } else {
+              const hours = Math.floor(elapsedMinutes / 60);
+              const mins = elapsedMinutes % 60;
+              sessionText = hours + " ชั่วโมง " + mins + " นาที";
+            }
+            document.getElementById("sessionTime").textContent = "เวลาที่ใช้งาน: " + sessionText;
+          }
+          setInterval(updateTimes, 1000);
+          updateTimes();
+
+        } else {
+          alert("ไม่พบข้อมูลผู้ใช้งาน");
+          window.location.href = "login.html";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    window.logout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    };
+
+    window.toggleProfileDetails = function() {
+      const details = document.getElementById("profileDetails");
+      details.style.display = details.style.display === "block" ? "none" : "block";
+    };
+  </script>
+  <style>
+    html, body {
+      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+      color: #333;
+      line-height: 1.6;
+      text-align: center;
+      box-sizing: border-box;
     }
-    h1 {
-        color: #e65100;
-        font-size: 2.5em;
-        margin: 20px 0;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-    }
+
     .container {
-        max-width: 700px;
-        margin: 20px auto;
-        background-color: #ffffff;
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        border: 3px solid #ffd1dc;
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 25px;
+      border: 5px solid #ffb6c1;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: fadeIn 0.8s ease-in-out;
     }
+
+    .profile-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: none;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .profile-container:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff69b4;
+      margin-right: 10px;
+    }
+
+    .profile-name {
+      font-size: 1.2em;
+      color: #ff4081;
+      text-shadow: 1px 1px #ffd700;
+      margin: 0;
+    }
+
+    .profile-details {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      text-align: left;
+      min-width: 200px;
+    }
+
+    .profile-details p {
+      margin: 5px 0;
+      font-size: 1em;
+      color: #333;
+    }
+
+    .profile-button {
+      display: block;
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #ff69b4;
+      color: white;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 3px #c2185b;
+      transition: transform 0.2s, background-color 0.3s;
+      text-decoration: none;
+      text-align: center;
+    }
+    .profile-button:hover { background-color: #f06292; transform: scale(1.05); }
+    .profile-button:active { transform: scale(0.95); box-shadow: 0 1px #9c165c; }
+
+    h1 { 
+      font-size: 2.6em; 
+      color: #ff4081; 
+      text-shadow: 2px 2px #ffd700; 
+      margin: 20px 0;
+    }
+
     p {
-        font-size: 1.2em;
-        color: #333;
-        margin-bottom: 25px;
+      font-size: 1.2em;
+      color: #333;
+      margin-bottom: 25px;
     }
+
     .button {
-        display: inline-block;
-        padding: 12px 30px;
-        margin: 10px;
-        background-color: #28a745;
-        color: white;
-        text-decoration: none;
-        border-radius: 10px;
-        font-size: 1.1em;
-        transition: transform 0.2s, background-color 0.3s;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 15px;
+      background-color: #32cd32;
+      color: white;
+      text-decoration: none;
+      border-radius: 15px;
+      font-size: 1.2em;
+      transition: transform 0.2s, background-color 0.3s;
+      box-shadow: 0 5px 0 #228b22;
+      text-align: center;
+      cursor: pointer;
     }
-    .button:hover {
-        background-color: #218838;
-        transform: translateY(-2px);
-    }
-    .button:active {
-        transform: translateY(1px);
-    }
+    .button:hover { background-color: #45a049; transform: scale(1.1); }
+    .button:active { transform: scale(0.95); box-shadow: 0 2px 0 #1c5e1c; }
+
     .video-button {
-        background-color: #007bff;
+      background-color: #007bff;
+      box-shadow: 0 5px 0 #0056b3;
     }
     .video-button:hover {
-        background-color: #0056b3;
+      background-color: #0056b3;
+      transform: scale(1.1);
     }
+    .video-button:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 0 #003d80;
+    }
+
     .back-button {
-        background-color: #6c757d;
+      background-color: #6c757d;
+      box-shadow: 0 5px 0 #5a6268;
     }
     .back-button:hover {
-        background-color: #5a6268;
+      background-color: #5a6268;
+      transform: scale(1.1);
     }
+    .back-button:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 0 #484f56;
+    }
+
     .button-container {
-        margin-top: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
     }
-</style>
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      .profile-container { padding: 8px 15px; top: 10px; left: 10px; }
+      .profile-img { width: 40px; height: 40px; }
+      .profile-name { font-size: 1em; }
+      .profile-details { top: 60px; min-width: 150px; }
+      .profile-details p { font-size: 0.9em; }
+      h1 { font-size: 2em; }
+      .button { font-size: 1em; padding: 10px 20px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📘 เลือกบทเรียน</h1>
-        <p>เลือกประเภทบทเรียนที่ต้องการเรียนรู้:</p>
-
-        <div class="button-container">
-            <!-- ปุ่มบทเรียนแบบอ่าน -->
-            <a href="lesson1.html" class="button">✨ บทเรียนจริยธรรมในการใช้เทคโนโลยี</a>
-            <a href="lesson2.html" class="button">🔒 บทเรียนเทคโนโลยีปลอดภัย</a>
-            <!-- ปุ่มบทเรียนแบบวิดีโอ -->
-            <a href="video1.html" class="button video-button">🎬 วิดีโอจริยธรรมในการใช้เทคโนโลยี</a>
-            <a href="video2.html" class="button video-button">🎥 วิดีโอเทคโนโลยีปลอดภัย</a>
-            <!-- ปุ่มกลับหน้าหลัก -->
-            <a href="home.html" class="button back-button">⬅️ กลับหน้าหลัก</a>
-        </div>
+  <!-- Profile Section -->
+  <div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
+    <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
+    <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+    <div class="profile-details" id="profileDetails">
+      <p id="profileGrade">ชั้นเรียน</p>
+      <p id="profileGender">เพศ</p>
+      <p id="profileNumber">เลขที่</p>
+      <p id="profileSchool">โรงเรียน</p>
+      <p id="currentDate">วันที่</p>
+      <p id="currentTime">เวลา</p>
+      <p id="sessionTime">เวลที่ใช้งาน</p>
+      <button class="profile-button" onclick="logout()">🚪 ออกจากระบบ</button>
     </div>
+  </div>
+
+  <div class="container">
+    <h1>📘 เลือกบทเรียน</h1>
+    <p>เลือกประเภทบทเรียนที่ต้องการเรียนรู้:</p>
+
+    <div class="button-container">
+      <a href="lesson1.html" class="button">✨ บทเรียนจริยธรรมในการใช้เทคโนโลยี</a>
+      <a href="lesson2.html" class="button">🔒 บทเรียนเทคโนโลยีปลอดภัย</a>
+      <a href="home.html" class="button back-button">⬅️ กลับหน้าหลัก</a>
+    </div>
+  </div>
 </body>
 </html>
