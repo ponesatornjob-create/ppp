@@ -1,104 +1,452 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>บทเรียน: จริยธรรมในการใช้เทคโนโลยี</title>
-<style>
-body {
-  font-family: 'Comic Sans MS', Arial, sans-serif;
-  background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
-  margin: 0;
-  padding: 20px;
-  text-align: center;
-}
-h1 { color: #ff4500; font-size: 2.2em; margin-bottom: 25px; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
-h2 { color: #4682b4; font-size: 1.5em; margin: 20px 0 15px; text-align: left; }
-.container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 25px 30px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-align: left; animation: fadeIn 0.8s ease-in-out; }
-.lesson-card { background: #fef9ff; border: 2px solid #ff69b4; border-radius: 15px; padding: 18px 22px; margin: 20px 0; box-shadow: 2px 5px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
-.lesson-card:hover { transform: scale(1.02); }
-ul { list-style: none; padding: 0; margin: 10px 0; }
-li { margin: 12px 0; font-size: 1.1em; line-height: 1.6; display: flex; flex-direction: column; align-items: flex-start; cursor: pointer; }
-p { cursor: pointer; }
-img.highlight { max-width: 100%; height: auto; margin-top: 10px; border-radius: 12px; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); transition: transform 0.2s; }
-img.highlight:hover { transform: scale(1.05); }
-.button { display: inline-block; padding: 12px 25px; margin: 20px 10px 0; background-color: #32cd32; color: #fff; text-decoration: none; border-radius: 15px; font-size: 1.1em; box-shadow: 0 4px 0 #228b22; transition: transform 0.2s, background-color 0.3s; }
-.button:hover { background-color: #45a049; transform: scale(1.05); }
-.back-button { background-color: #4682b4; box-shadow: 0 4px 0 #2f4f4f; }
-.back-button:hover { background-color: #5a9bd5; }
-.fullscreen-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-.fullscreen-overlay img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 15px; }
-.fullscreen-overlay .close-button { position: absolute; top: 20px; right: 20px; color: white; font-size: 2em; cursor: pointer; }
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทเรียนที่ 1: จริยธรรมในการใช้เทคโนโลยี</title>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIQfBuiYzF1vWBJzTeY_OiP3gN_E4_-lY",
+      authDomain: "ppp5-b59d6.firebaseapp.com",
+      projectId: "ppp5-b59d6",
+      storageBucket: "ppp5-b59d6.appspot.com",
+      messagingSenderId: "562619004801",
+      appId: "1:562619004801:web:ab2e288ddc583ef143da80",
+      measurementId: "G-H1DQRS4WVE"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Check user authentication state
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          const data = userDocSnap.data();
+
+          // Set prefix based on gender
+          let prefix = "";
+          if (data.gender === "ชาย") prefix = "เด็กชาย ";
+          else if (data.gender === "หญิง") prefix = "เด็กหญิง ";
+
+          // Map grade to full text
+          const gradeMap = {
+            "ป.1": "ประถมศึกษาปีที่ 1",
+            "ป.2": "ประถมศึกษาปีที่ 2",
+            "ป.3": "ประถมศึกษาปีที่ 3",
+            "ป.4": "ประถมศึกษาปีที่ 4",
+            "ป.5": "ประถมศึกษาปีที่ 5",
+            "ป.6": "ประถมศึกษาปีที่ 6"
+          };
+          const fullGrade = gradeMap[data.grade] || data.grade;
+
+          // Update profile display
+          document.getElementById("profilePhoto").src = data.photoURL || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+          document.getElementById("profileName").textContent = prefix + (data.name || "");
+          document.getElementById("profileGrade").textContent = "ชั้น: " + fullGrade;
+          document.getElementById("profileGender").textContent = "เพศ: " + (data.gender || "");
+          document.getElementById("profileNumber").textContent = "เลขที่: " + (data.number || "ไม่ระบุ");
+          document.getElementById("profileSchool").textContent = "โรงเรียน: " + (data.school || "ไม่ระบุ");
+          document.getElementById("profileContainer").style.display = "flex";
+
+          // Start timer and update times
+          let startTime = Date.now();
+          function updateTimes() {
+            // Current date and time
+            const now = new Date();
+            document.getElementById("currentDate").textContent = "วันที่: " + now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById("currentTime").textContent = "เวลา: " + now.toLocaleTimeString('th-TH');
+
+            // Session time
+            const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
+            let sessionText;
+            if (elapsedMinutes < 60) {
+              sessionText = elapsedMinutes + " นาที";
+            } else {
+              const hours = Math.floor(elapsedMinutes / 60);
+              const mins = elapsedMinutes % 60;
+              sessionText = hours + " ชั่วโมง " + mins + " นาที";
+            }
+            document.getElementById("sessionTime").textContent = "เวลาที่ใช้งาน: " + sessionText;
+          }
+          setInterval(updateTimes, 1000);
+          updateTimes();
+
+        } else {
+          alert("ไม่พบข้อมูลผู้ใช้งาน");
+          window.location.href = "login.html";
+        }
+      } else {
+        window.location.href = "login.html";
+      }
+    });
+
+    // Logout function
+    window.logout = function() {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    };
+
+    // Toggle profile details
+    window.toggleProfileDetails = function() {
+      const details = document.getElementById("profileDetails");
+      details.style.display = details.style.display === "block" ? "none" : "block";
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 25px;
+      border: 5px solid #ffb6c1;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Profile Section Styles */
+    .profile-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: none;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .profile-container:hover {
+      transform: scale(1.05);
+    }
+
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ff69b4;
+      margin-right: 10px;
+    }
+
+    .profile-name {
+      font-size: 1.2em;
+      color: #ff4081;
+      text-shadow: 1px 1px #ffd700;
+      margin: 0;
+    }
+
+    .profile-details {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      background: white;
+      padding: 15px;
+      border-radius: 15px;
+      border: 3px solid #ff69b4;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1001;
+      text-align: left;
+      min-width: 200px;
+    }
+
+    .profile-details p {
+      margin: 5px 0;
+      font-size: 1em;
+      color: #333;
+    }
+
+    .profile-button {
+      display: block;
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #ff69b4;
+      color: white;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 3px #c2185b;
+      transition: transform 0.2s, background-color 0.3s;
+      text-decoration: none;
+      text-align: center;
+    }
+    .profile-button:hover { background-color: #f06292; transform: scale(1.05); }
+    .profile-button:active { transform: scale(0.95); box-shadow: 0 1px #9c165c; }
+
+    h1 { font-size: 2.6em; color: #ff4081; text-shadow: 2px 2px #ffd700; }
+    h2 { font-size: 1.8em; color: #4682b4; margin-top: 15px; }
+
+    .button {
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 15px auto 0;
+      background-color: #32cd32;
+      color: white;
+      text-decoration: none;
+      border-radius: 15px;
+      font-size: 1.2em;
+      transition: transform 0.2s, background-color 0.3s;
+      box-shadow: 0 5px 0 #228b22;
+      text-align: center;
+      cursor: pointer;
+    }
+    .button:hover { background-color: #45a049; transform: scale(1.1); }
+    .button:active { transform: scale(0.95); box-shadow: 0 2px 0 #1c5e1c; }
+
+    .responsive-iframe {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      margin: 15px 0;
+    }
+    .responsive-iframe iframe,
+    .responsive-iframe video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .lesson-frame {
+      background: #f0f8ff;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      margin: 20px 0;
+    }
+    .lesson-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .lesson-card h3 { color: #d81b60; margin-bottom: 10px; }
+    .lesson-card p { margin: 10px 0 5px; cursor: pointer; text-align: left; }
+    .lesson-card img.highlight {
+      width: 90%;
+      max-width: 500px;
+      display: block;
+      margin: 10px auto 20px;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* Lightbox Overlay */
+    #lightboxOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    #lightboxContent {
+      position: relative;
+      max-width: 80%;
+      max-height: 80%;
+    }
+
+    #lightboxContent img {
+      width: 80vw;
+      max-width: 80%;
+      height: auto;
+      max-height: 80vh;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      transition: transform 0.3s;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #lightboxClose {
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      background: #ff4081;
+      color: white;
+      border: none;
+      font-size: 1.5em;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10000;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      .profile-container { padding: 8px 15px; top: 10px; left: 10px; }
+      .profile-img { width: 40px; height: 40px; }
+      .profile-name { font-size: 1em; }
+      .profile-details { top: 60px; min-width: 150px; }
+      .profile-details p { font-size: 0.9em; }
+      h1 { font-size: 2em; }
+      .button { font-size: 1em; padding: 10px 20px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>บทเรียน: จริยธรรมในการใช้เทคโนโลยี</h1>
-
-  <div class="lesson-card">
-    <h2>1. มารยาทและจริยธรรมในการใช้เทคโนโลยีสารสนเทศ</h2>
-    <p onclick="speakText('มารยาท คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ')"><b>มารยาท</b> คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ</p>
-    <ul>
-      <li><img src="5.png" alt="พูดจาสุภาพ" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-    </ul>
-    <p onclick="speakText('จริยธรรม คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง')"><b>จริยธรรม</b> คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง</p>
-    <ul>
-      <li><img src="4.png" alt="ทำสิ่งที่ถูกต้อง" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-    </ul>
-    <p onclick="speakText('การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข')">การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข</p>
+<!-- Profile Section -->
+<div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
+  <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
+  <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+  <div class="profile-details" id="profileDetails">
+    <p id="profileGrade">ชั้นเรียน</p>
+    <p id="profileGender">เพศ</p>
+    <p id="profileNumber">เลขที่</p>
+    <p id="profileSchool">โรงเรียน</p>
+    <p id="currentDate">วันที่</p>
+    <p id="currentTime">เวลา</p>
+    <p id="sessionTime">เวลาที่ใช้งาน</p>
+    <button class="profile-button" onclick="logout()">🚪 ออกจากระบบ</button>
   </div>
-
-  <div class="lesson-card">
-    <h2>2. บัญญัติ 10 ประการเกี่ยวกับมารยาทในการใช้เทคโนโลยีสารสนเทศ</h2>
-    <ul>
-      <li onclick="speakText('ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น')">1. ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น<br><img src="6.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่รบกวนการทำงานของผู้อื่น')">2. ไม่รบกวนการทำงานของผู้อื่น<br><img src="7.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น')">3. ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น<br><img src="8.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล')">4. ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล<br><img src="9.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่สร้างหลักฐานเท็จ')">5. ไม่สร้างหลักฐานเท็จ<br><img src="10.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์')">6. ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์<br><img src="11.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น')">7. ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น<br><img src="12.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ไม่นำผลงานของผู้อื่นเป็นของตน')">8. ไม่นำผลงานของผู้อื่นเป็นของตน<br><img src="13.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน')">9. คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน<br><img src="14.png" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-      <li onclick="speakText('ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท')">10. ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท<br><img src="https://jpjetiya.wordpress.com/wp-content/uploads/2015/08/images9.jpg" class="highlight" onclick="showFullscreen(this.src, this.alt)"></li>
-    </ul>
-  </div>
-
-  <a href="lessons.html" class="button back-button">⬅ กลับหน้าเลือกบทเรียน</a>
 </div>
 
-<div id="fullscreenOverlay" class="fullscreen-overlay">
-  <span class="close-button" onclick="closeFullscreen()">✕</span>
-  <img id="fullscreenImage" src="" alt="">
+<div class="container">
+  <h1>📘 บทเรียนที่ 1: จริยธรรมในการใช้เทคโนโลยี</h1>
+
+  <section id="lesson1">
+    <h2>บทเรียนที่ 1: จริยธรรมในการใช้เทคโนโลยี</h2>
+    <div class="responsive-iframe">
+      <iframe src="https://www.youtube.com/embed/YXy5rxySx-k" allowfullscreen></iframe>
+    </div>
+    <div class="responsive-iframe">
+      <video controls>
+        <source src="videos/1.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+
+    <div class="lesson-frame">
+      <div class="lesson-card">
+        <h3>1. มารยาทและจริยธรรมในการใช้เทคโนโลยีสารสนเทศ</h3>
+        <p onclick="speakText('มารยาท คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ')"><b>มารยาท</b> คือ กริยาวาจาที่สุภาพและถูกกาลเทศะ</p>
+        <img src="img/5.png" alt="พูดจาสุภาพ" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('จริยธรรม คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง')"><b>จริยธรรม</b> คือ การประพฤติปฏิบัติที่แสดงถึงการกระทำในสิ่งที่ถูกต้อง</p>
+        <img src="img/4.jpg" alt="ทำสิ่งที่ถูกต้อง" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข')">
+          การใช้เทคโนโลยีอย่างมีมารยาทและจริยธรรมช่วยให้เราอยู่ร่วมกับผู้อื่นในสังคมออนไลน์อย่างปลอดภัยและมีความสุข
+        </p>
+      </div>
+
+      <div class="lesson-card">
+        <h3>2. บัญญัติ 10 ประการเกี่ยวกับมารยาทในการใช้เทคโนโลยีสารสนเทศ</h3>
+        <p onclick="speakText('ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น')">1. ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น</p>
+        <img src="img/6.jpg" alt="ไม่ใช้คอมพิวเตอร์ทำร้ายหรือละเมิดผู้อื่น" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่รบกวนการทำงานของผู้อื่น')">2. ไม่รบกวนการทำงานของผู้อื่น</p>
+        <img src="img/7.png" alt="ไม่รบกวนการทำงานของผู้อื่น" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น')">3. ไม่สอดแนม แก้ไข หรือเปิดดูแฟ้มข้อมูลของผู้อื่น</p>
+        <img src="img/8.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล')">4. ไม่ใช้คอมพิวเตอร์เพื่อการโจรกรรมข้อมูล</p>
+        <img src="img/9.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่สร้างหลักฐานเท็จ')">5. ไม่สร้างหลักฐานเท็จ</p>
+        <img src="img/10.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์')">6. ไม่คัดลอกโปรแกรมของผู้อื่นที่มีลิขสิทธิ์</p>
+        <img src="img/11.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น')">7. ไม่ละเมิดการใช้ทรัพยากรคอมพิวเตอร์ของผู้อื่น</p>
+        <img src="img/12.jpg" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ไม่นำผลงานของผู้อื่นเป็นของตน')">8. ไม่นำผลงานของผู้อื่นเป็นของตน</p>
+        <img src="img/13.jpg" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน')">9. คำนึงถึงผลกระทบต่อสังคมจากการกระทำของตน</p>
+        <img src="img/14.png" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+
+        <p onclick="speakText('ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท')">10. ใช้คอมพิวเตอร์โดยเคารพกฎระเบียบและมีมารยาท</p>
+        <img src="https://jpjetiya.wordpress.com/wp-content/uploads/2015/08/images9.jpg" alt="" class="highlight" onclick="showFullscreen(this.src, this.alt);">
+      </div>
+    </div>
+
+    <button class="button" onclick="window.location.href='lessons.html'">⬅️ กลับไปเลือกบทเรียน</button>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightboxOverlay" onclick="closeLightbox()">
+    <div id="lightboxContent" onclick="event.stopPropagation()">
+      <button id="lightboxClose" onclick="closeLightbox()">×</button>
+      <img id="lightboxImage" src="" alt="">
+    </div>
+  </div>
+
 </div>
 
 <script>
-function speakText(text) {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'th-TH';
-    utterance.rate = 0.61;
-    utterance.pitch = 0.61;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utterance);
-  } else {
-    alert('เบราว์เซอร์ของคุณไม่รองรับ TTS');
+  function showFullscreen(src, alt) {
+    const overlay = document.getElementById('lightboxOverlay');
+    const img = document.getElementById('lightboxImage');
+    img.src = src;
+    img.alt = alt;
+    overlay.style.display = 'flex';
+    speakText(alt);
   }
-}
 
-function showFullscreen(src, alt) {
-  const overlay = document.getElementById('fullscreenOverlay');
-  const img = document.getElementById('fullscreenImage');
-  img.src = src;
-  img.alt = alt;
-  overlay.style.display = 'flex';
-}
+  function closeLightbox() {
+    document.getElementById('lightboxOverlay').style.display = 'none';
+  }
 
-function closeFullscreen() {
-  document.getElementById('fullscreenOverlay').style.display = 'none';
-}
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") closeLightbox();
+  });
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'th-TH';
+      window.speechSynthesis.speak(utter);
+    }
+  }
 </script>
 
 </body>
