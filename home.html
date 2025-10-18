@@ -78,27 +78,17 @@
           document.getElementById("profileContainer").style.display = "flex";
 
           // Update welcome text
-          document.getElementById("welcomeText").textContent = "🎉 ยินดีต้อนรับ " + (prefix + (data.name || userName)) + " 🎉";
+          document.getElementById("welcomeText").textContent = "ยินดีด้วย "+prefix + (data.name || userName) + " จบการเรียนรู้แล้ว 🎉";
 
           // Start timer and update times
           let startTime = Date.now();
           function updateTimes() {
-            // Current date and time
             const now = new Date();
             document.getElementById("currentDate").textContent = "วันที่: " + now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
             document.getElementById("currentTime").textContent = "เวลา: " + now.toLocaleTimeString('th-TH');
-
-            // Session time
             const elapsedMinutes = Math.floor((Date.now() - startTime) / 1000 / 60);
-            let sessionText;
-            if (elapsedMinutes < 60) {
-              sessionText = elapsedMinutes + " นาที";
-            } else {
-              const hours = Math.floor(elapsedMinutes / 60);
-              const mins = elapsedMinutes % 60;
-              sessionText = hours + " ชั่วโมง " + mins + " นาที";
-            }
-            document.getElementById("sessionTime").textContent = "เวลาที่ใช้งาน: " + sessionText;
+            let sessionText = elapsedMinutes < 60 ? elapsedMinutes + " นาที" : Math.floor(elapsedMinutes / 60) + " ชม. " + (elapsedMinutes % 60) + " น.";
+            document.getElementById("sessionTime").textContent = "ใช้งาน: " + sessionText;
           }
           setInterval(updateTimes, 1000);
           updateTimes();
@@ -124,53 +114,110 @@
     // Toggle profile details
     window.toggleProfileDetails = function() {
       const details = document.getElementById("profileDetails");
-      details.style.display = details.style.display === "block" ? "none" : "block";
+      if (details.style.display === "block") {
+        details.style.display = "none";
+      } else {
+        details.style.display = "block";
+        details.scrollTop = 0;
+      }
     };
   </script>
   <style>
-    html, body {
-      height: 100vh;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
+    body {
       font-family: 'Comic Sans MS', Arial, sans-serif;
-      background: linear-gradient(to bottom right, #a0e9ff, #fbc2eb);
-      color: #333;
-      line-height: 1.6;
+      background: linear-gradient(45deg, #a8edea 0%, #fed6e3 25%, #fed6e3 75%, #a8edea 100%);
+      background-size: 400% 400%;
+      animation: blueGradient 8s ease infinite;
+      margin: 0;
+      padding: 0;
       text-align: center;
-      box-sizing: border-box;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 900px;
+    /* ดาวลอยพื้นหลัง */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, #87ceeb, transparent),
+        radial-gradient(2px 2px at 40px 70px, #00bfff, transparent),
+        radial-gradient(1px 1px at 90px 40px, #1e90ff, transparent),
+        radial-gradient(1px 1px at 130px 80px, #4169e1, transparent),
+        radial-gradient(2px 2px at 160px 30px, #87ceeb, transparent);
+      background-repeat: repeat;
+      background-size: 200px 100px;
+      animation: sparkle 20s linear infinite;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes sparkle {
+      from { transform: translateY(0px); }
+      to { transform: translateY(-100px); }
+    }
+
+    @keyframes blueGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* กรอบนอกใหญ่ */
+    .outer-frame {
+      border: 5px solid #00bfff;
+      border-radius: 35px;
       margin: 20px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 25px;
-      border: 5px solid #ffb6c1;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-      animation: fadeIn 0.8s ease-in-out;
+      max-width: 920px;
+      box-sizing: border-box;
+      background: linear-gradient(145deg, #fff, #f0f8ff);
+      transition: box-shadow 0.3s, transform 0.3s;
+      min-height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
     }
 
-    /* Profile Section Styles */
+    .outer-frame.hover-effect {
+      box-shadow: 0 0 25px rgba(0, 191, 255, 0.8), 0 0 50px rgba(135, 206, 235, 0.4);
+      transform: scale(1.02);
+    }
+
+    .inner-frame {
+      background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+      border-radius: 30px;
+      padding: 40px 25px;
+      box-shadow: 
+        0 10px 20px rgba(0,0,0,0.15),
+        inset 0 2px 10px rgba(255, 255, 255, 0.8);
+      flex: 1;
+      position: relative;
+    }
+
+    /* Profile Section - มุมซ้ายบน */
     .profile-container {
       position: fixed;
-      top: 20px;
-      left: 20px;
+      top: 15px;
+      left: 15px;
       display: none;
       align-items: center;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px 20px;
-      border-radius: 15px;
-      border: 3px solid #ff69b4;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      background: linear-gradient(45deg, #fff, #e6f3ff);
+      padding: 12px 18px;
+      border-radius: 20px;
+      border: 3px solid #87ceeb;
+      box-shadow: 0 8px 20px rgba(0, 191, 255, 0.3);
       z-index: 1000;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: all 0.3s;
     }
 
-    .profile-container:hover {
+    .profile-container:hover { 
       transform: scale(1.05);
+      box-shadow: 0 12px 25px rgba(0, 191, 255, 0.5);
     }
 
     .profile-img {
@@ -178,152 +225,317 @@
       height: 50px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #ff69b4;
+      border: 3px solid #00bfff;
       margin-right: 10px;
     }
 
     .profile-name {
-      font-size: 1.2em;
-      color: #ff4081;
-      text-shadow: 1px 1px #ffd700;
+      font-size: 1.1em;
+      color: #000000 !important;
+      font-weight: bold;
       margin: 0;
+      text-shadow: 1px 1px 2px rgba(0, 191, 255, 0.3);
     }
 
+    /* กรอบวันที่เวลา - มุมขวาบน */
+    .datetime-container {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: linear-gradient(45deg, #fff, #e6f3ff);
+      padding: 12px 18px;
+      border-radius: 20px;
+      border: 3px solid #87ceeb;
+      box-shadow: 0 8px 20px rgba(0, 191, 255, 0.3);
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+
+    .datetime-container:hover { 
+      transform: scale(1.05);
+      box-shadow: 0 12px 25px rgba(0, 191, 255, 0.5);
+    }
+
+    .datetime-text {
+      font-size: 1em;
+      color: #000000 !important;
+      font-weight: bold;
+      margin: 2px 0;
+      text-shadow: 1px 1px 2px rgba(0, 191, 255, 0.3);
+    }
+
+    /* กรอบรายละเอียด - นอกกรอบใหญ่ + เลื่อนได้ */
     .profile-details {
-      position: absolute;
-      top: 70px;
-      left: 0;
-      background: white;
-      padding: 15px;
-      border-radius: 15px;
-      border: 3px solid #ff69b4;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: fixed;
+      top: 80px;
+      left: 15px;
+      background: linear-gradient(135deg, #fff, #f0f8ff);
+      padding: 25px;
+      border-radius: 20px;
+      border: 4px solid #87ceeb;
+      box-shadow: 0 10px 25px rgba(0, 191, 255, 0.3);
       display: none;
       z-index: 1001;
       text-align: left;
-      min-width: 200px;
+      min-width: 240px;
+      max-width: 300px;
+      max-height: 70vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      transition: all 0.3s ease;
+    }
+
+    /* Custom scrollbar */
+    .profile-details::-webkit-scrollbar {
+      width: 6px;
+    }
+    .profile-details::-webkit-scrollbar-track {
+      background: rgba(135, 206, 235, 0.3);
+      border-radius: 10px;
+    }
+    .profile-details::-webkit-scrollbar-thumb {
+      background: linear-gradient(#00bfff, #1e90ff);
+      border-radius: 10px;
+    }
+    .profile-details::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(#1e90ff, #00bfff);
     }
 
     .profile-details p {
-      margin: 5px 0;
+      margin: 12px 0;
       font-size: 1em;
-      color: #333;
+      color: #000000 !important;
+      border-left: 3px solid #00bfff;
+      padding: 8px 10px;
+      background: rgba(135, 206, 235, 0.1);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .profile-details p:hover {
+      background: rgba(135, 206, 235, 0.2);
+      transform: translateX(3px);
     }
 
     .profile-button {
       display: block;
-      padding: 10px 20px;
-      margin-top: 10px;
-      background-color: #ff69b4;
+      padding: 12px 20px;
+      margin: 15px 0 5px 0;
+      background: linear-gradient(45deg, #00bfff, #1e90ff);
       color: white;
-      border-radius: 10px;
+      border-radius: 20px;
       font-size: 1em;
       cursor: pointer;
-      box-shadow: 0 3px #c2185b;
-      transition: transform 0.2s, background-color 0.3s;
-      text-decoration: none;
-      text-align: center;
+      box-shadow: 0 6px #4169e1;
+      transition: all 0.3s;
+      border: none;
+      width: 100%;
     }
-    .profile-button:hover { background-color: #f06292; transform: scale(1.05); }
-    .profile-button:active { transform: scale(0.95); box-shadow: 0 1px #9c165c; }
 
+    .profile-button:hover { 
+      background: linear-gradient(45deg, #1e90ff, #00bfff);
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 10px #4169e1;
+    }
+
+    /* หัวข้อใหญ่ - บรรทัดเดียว */
     h1 { 
-      font-size: 2.6em; 
-      color: #ff4081; 
-      text-shadow: 2px 2px #ffd700; 
-      margin: 20px 0;
+      color: #000000 !important;
+      font-size: clamp(1.2em, 4vw, 1.8em);
+      margin-bottom: 25px;
+      padding: 12px 20px;
+      border-radius: 20px;
+      border: 4px solid #87ceeb;
+      background: linear-gradient(45deg, rgba(0, 191, 255, 0.1), rgba(65, 105, 225, 0.1));
+      white-space: nowrap;
+      display: inline-block;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      animation: bounce 2s infinite;
     }
 
+    /* ย่อหน้า */
     p {
-      font-size: 1.2em;
-      color: #333;
-      margin-bottom: 25px;
+      font-size: clamp(1em, 3vw, 1.2em);
+      line-height: 1.6;
+      color: #000000 !important;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      margin: 20px auto;
+      border: 4px solid #87ceeb;
+      max-width: 800px;
+      transition: all 0.3s;
+    }
+
+    p:hover {
+      transform: scale(1.02);
+      background: rgba(135, 206, 235, 0.15);
+      box-shadow: 0 8px 20px rgba(0, 191, 255, 0.3);
+      border-color: #00bfff;
     }
 
     .button {
       display: inline-block;
       padding: 15px 30px;
       margin: 15px;
-      background-color: #32cd32;
+      background: linear-gradient(45deg, #4fc3f7, #0288d1);
       color: white;
       text-decoration: none;
-      border-radius: 15px;
-      font-size: 1.2em;
-      transition: transform 0.2s, background-color 0.3s;
-      box-shadow: 0 5px 0 #228b22;
-      text-align: center;
-      cursor: pointer;
+      border-radius: 25px;
+      font-size: clamp(1.1em, 3.5vw, 1.3em);
+      box-shadow: 0 6px #0277bd, 0 0 10px rgba(79, 195, 247, 0.5);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
     }
-    .button:hover { background-color: #45a049; transform: scale(1.1); }
-    .button:active { transform: scale(0.95); box-shadow: 0 2px 0 #1c5e1c; }
 
-    .game-button {
-      background-color: #ff69b4;
-      box-shadow: 0 5px 0 #c2185b;
+    .button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
     }
-    .game-button:hover { background-color: #f06292; }
-    .game-button:active { transform: scale(0.95); box-shadow: 0 2px 0 #9c165c; }
 
-    .test-button {
-      background-color: #ffa500;
-      box-shadow: 0 5px 0 #e65100;
+    .button:hover::before { left: 100%; }
+    .button:hover { 
+      transform: scale(1.15) translateY(-3px);
+      box-shadow: 0 12px #0277bd, 0 0 20px rgba(79, 195, 247, 0.8);
     }
-    .test-button:hover { background-color: #ff9800; }
-    .test-button:active { transform: scale(0.95); box-shadow: 0 2px 0 #cc4c00; }
+
+    .game-button { 
+      background: linear-gradient(45deg, #00bfff, #1e90ff);
+      box-shadow: 0 6px #4169e1, 0 0 10px rgba(0, 191, 255, 0.5); 
+    }
+    .game-button:hover { 
+      background: linear-gradient(45deg, #1e90ff, #00bfff);
+      box-shadow: 0 12px #4169e1, 0 0 20px rgba(0, 191, 255, 0.8);
+    }
 
     .button-container {
-      margin-top: 20px;
+      margin-top: 30px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 15px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+
+    /* Floating stars */
+    .floating-star {
+      position: fixed;
+      font-size: 20px;
+      color: #00bfff;
+      pointer-events: none;
+      z-index: -1;
+      animation: float 6s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+    }
+
+    @media (max-width: 768px) {
+      .inner-frame { padding: 30px 20px; }
+      .profile-container { padding: 10px 15px; top: 10px; left: 10px; }
+      .datetime-container { padding: 10px 15px; top: 10px; right: 10px; }
+      .profile-details { top: 75px; left: 10px; min-width: 220px; max-height: 60vh; }
+      .profile-img { width: 45px; height: 45px; }
+      .profile-name, .datetime-text { font-size: 1em; }
+      .button { display: block; margin: 10px auto; }
+      .button-container { flex-direction: column; align-items: center; }
     }
 
     @media (max-width: 480px) {
-      .profile-container { padding: 8px 15px; top: 10px; left: 10px; }
-      .profile-img { width: 40px; height: 40px; }
-      .profile-name { font-size: 1em; }
-      .profile-details { top: 60px; min-width: 150px; }
-      .profile-details p { font-size: 0.9em; }
-      h1 { font-size: 2em; }
-      .button { font-size: 1em; padding: 10px 20px; }
+      .inner-frame { padding: 25px 15px; }
+      p { font-size: 1em; padding: 15px; }
+      .profile-details { min-width: 180px; padding: 20px; left: 5px; max-height: 50vh; }
+      .datetime-container { padding: 8px 12px; }
+      .datetime-text { font-size: 0.9em; }
     }
   </style>
 </head>
 <body>
+  <!-- Floating stars -->
+  <div class="floating-star" style="left: 10%; animation-delay: 0s;">⭐</div>
+  <div class="floating-star" style="left: 20%; animation-delay: 1s;">✨</div>
+  <div class="floating-star" style="left: 80%; animation-delay: 2s;">🌟</div>
+  <div class="floating-star" style="left: 90%; animation-delay: 3s;">⭐</div>
 
-<!-- Profile Section -->
-<div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
-  <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
-  <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+  <!-- Profile Section - ซ้าย -->
+  <div class="profile-container" id="profileContainer" onclick="toggleProfileDetails()">
+    <img id="profilePhoto" class="profile-img" src="" alt="รูปโปรไฟล์">
+    <h3 class="profile-name" id="profileName">ชื่อผู้ใช้</h3>
+  </div>
+
+  <!-- กรอบวันที่เวลา - ขวา -->
+  <div class="datetime-container">
+    <div class="datetime-text" id="currentDate">วันที่: 18 ตุลาคม 2568</div>
+    <div class="datetime-text" id="currentTime">เวลา: 10:59:53</div>
+    <div class="datetime-text" id="sessionTime">ใช้งาน: 0 นาที</div>
+  </div>
+
+  <!-- กรอบรายละเอียดนอก + เลื่อนได้ -->
   <div class="profile-details" id="profileDetails">
     <p id="profileGrade">ชั้นเรียน</p>
     <p id="profileGender">เพศ</p>
     <p id="profileNumber">เลขที่</p>
     <p id="profileSchool">โรงเรียน</p>
-    <p id="profileQuote"></p>
-    <p id="currentDate">วันที่</p>
-    <p id="currentTime">เวลา</p>
-    <p id="sessionTime">เวลาที่ใช้งาน</p>
+    <p id="profileQuote">คำคม</p>
     <button class="profile-button" onclick="logout()">🚪 ออกจากระบบ</button>
   </div>
-</div>
 
-<div class="container">
-  <h1 id="welcomeText">🎉 ยินดีต้อนรับ 🎉</h1>
-  <p>มาเรียนรู้วิธีใช้เทคโนโลยีอย่างปลอดภัยและมีจริยธรรมกันเถอะ!</p>
+  <div class="outer-frame" id="outerFrame">
+    <div class="inner-frame">
+      <h1 id="welcomeText">ยินดีด้วยจบการเรียนรู้แล้ว 🎉</h1>
+      <p>🌟 มาทบทวนการเรียนรู้วิธีใช้เทคโนโลยีอย่างปลอดภัยและมีจริยธรรมกันเถอะ! 💻✨</p>
 
-  <div class="button-container">
-    <a href="lessons.html" class="button">📘 เริ่มเรียน</a>
-    <a href="https://g.co/gemini/share/a7ec6c4fa0df" target="_blank" class="button game-button">📖 อ่านนิทาน</a>
-    <a href="games.html" class="button game-button">🎮 เล่นเกม</a>
+      <div class="button-container">
+        <a href="lessons.html" class="button">📘 เริ่มเรียน</a>
+        <a href="https://g.co/gemini/share/a7ec6c4fa0df" target="_blank" class="button game-button">📖 อ่านนิทาน</a>
+        <a href="games.html" class="button game-button">🎮 เล่นเกม</a>
+      </div>
+    </div>
   </div>
-</div>
 
+  <script>
+    // Hover effect สำหรับ outer-frame
+    const outer = document.getElementById('outerFrame');
+    const interactElements = document.querySelectorAll('h1, p, .button, .profile-container, .datetime-container');
+
+    interactElements.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        outer.classList.add('hover-effect');
+      });
+      el.addEventListener('mouseleave', () => {
+        outer.classList.remove('hover-effect');
+      });
+    });
+
+    // ดาวลอยสุ่ม
+    function createFloatingStar() {
+      const star = document.createElement('div');
+      star.className = 'floating-star';
+      star.innerHTML = ['⭐', '✨', '🌟', '💫'][Math.floor(Math.random() * 4)];
+      star.style.left = Math.random() * 100 + '%';
+      star.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      star.style.animationDelay = Math.random() * 2 + 's';
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 7000);
+    }
+    setInterval(createFloatingStar, 1500);
+  </script>
 </body>
 </html>
