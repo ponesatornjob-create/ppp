@@ -418,19 +418,7 @@
     <div class="responsive-iframe responsive-form">
       <iframe src="https://forms.gle/fd2n21cWVz6eU3ej7">กำลังโหลด...</iframe>
     </div>
-    <button class="button" onclick="nextStep('story')">เสร็จแล้ว → อ่านนิทาน</button>
-  </section>
-
-  <section id="story" style="display:none;">
-    <h2>นิทานสอนใจ</h2>
-    <p>📖 บทเรียนของนัทกับโลกดิจิทัล</p>
-    <a href="https://g.co/gemini/share/a246e62244e8" target="_blank">
-      <img src="img/nut.PNG" 
-           alt="นิทานสอนใจ" 
-           style="width:90%; max-width:600px; cursor:pointer; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-    </a>
-    <br><br>
-    <button class="button" onclick="nextStep('lesson1')">ต่อไป → บทเรียนที่ 1</button>
+    <button class="button" onclick="nextStep('lesson1')">เสร็จแล้ว → บทเรียนที่ 1</button>
   </section>
 
   <!-- 3.1 Lesson 1 -->
@@ -544,6 +532,18 @@
       </div>
     </div>
 
+    <button class="button" onclick="nextStep('story')">ต่อไป → อ่านนิทาน</button>
+  </section>
+
+  <section id="story" style="display:none;">
+    <h2>นิทานสอนใจ</h2>
+    <p>📖 บทเรียนของนัทกับโลกดิจิทัล</p>
+    <a href="https://g.co/gemini/share/a246e62244e8" target="_blank">
+      <img src="img/nut.PNG" 
+           alt="นิทานสอนใจ" 
+           style="width:90%; max-width:600px; cursor:pointer; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+    </a>
+    <br><br>
     <button class="button" onclick="nextStep('game')">ต่อไป → เล่นเกม</button>
   </section>
 
@@ -659,5 +659,3 @@
 </body>
 
 </html>
-
-
